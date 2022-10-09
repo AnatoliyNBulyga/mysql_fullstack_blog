@@ -1,24 +1,24 @@
-import React, {useState} from 'react';
-import { Link, useNavigate} from "react-router-dom";
-import axios from "axios";
+import React, {useState} from 'react'
+import { Link, useNavigate} from "react-router-dom"
+import axios from "axios"
 
 const Register = () => {
     const [inputs, setInputs] = useState({
         username: "",
         email: "",
         password: ""
-    });
-    const [error, setError] = useState(null);
-    const navigate = useNavigate();
+    })
+    const [error, setError] = useState(null)
+    const navigate = useNavigate()
     const handleChange = e => {
-        setInputs(prev => ({...prev, [e.target.name]: e.target.value}));
-    };
+        setInputs(prev => ({...prev, [e.target.name]: e.target.value}))
+    }
     console.log('inputs ', inputs)
     const handleSubmit = async e => {
-      e.preventDefault();
+      e.preventDefault()
       try {
-        await axios.post("/auth/register", inputs);
-        navigate("/login");
+        await axios.post("/auth/register", inputs)
+        navigate("/login")
       } catch (err) {
           setError(err.response.data)
       }
