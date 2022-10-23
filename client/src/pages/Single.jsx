@@ -1,41 +1,71 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Edit from '../img/edit.png';
 import Delete from '../img/delete.png';
-import {Link} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import Menu from "../components/Menu";
+import axios from "axios";
+import moment from "moment";
+import {AuthContext} from "../context/authContext";
+import {getText} from "../utils";
+
 
 const Single = () => {
+    const [post, setPost] = useState({})
+
+    const { id } = useParams()
+    const navigate = useNavigate()
+
+    const { currentUser } = useContext(AuthContext)
+
+    useEffect ( () => {
+        const fetchData = async () => {
+            try {
+                const res = await axios.get(`/posts/${id}`)
+                setPost(res.data)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        fetchData()
+    }, [id])
+
+    const handleDelete = async () => {
+        try {
+            const res = await axios.delete(`/posts/${id}`)
+            navigate('/')
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     return (
         <div className="single">
             <div className="content">
-                <img src="https://images.pexels.com/photos/7008010/pexels-photo-7008010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Single post image"/>
+                <img src={`../uploads/${post?.img}`} alt="Single post image"/>
                 <div className="user">
-                    <img src="https://img.freepik.com/premium-photo/caucasian-handsome-man-posing-with-arms-at-hip-and-smiling-over-isolated-purple-wall_1368-89876.jpg?w=360" alt="User avatar"/>
+                    {
+                        post.userImg && <img src={post.userImg} alt="User avatar"/>
+                    }
                     <div className="info">
-                        <span>John</span>
-                        <p>Posted 2 days ago</p>
+                        <span>{post.username}</span>
+                        <p>Posted {moment(post.date).fromNow()}</p>
                     </div>
-                    <div className="edit">
-                        <Link to={`/write?edit=2`}>
-                            <img src={Edit} alt="Edit" />
-                        </Link>
-                        <img src={Delete} alt="Delete"/>
-                    </div>
+                    {
+                        currentUser.username === post.username &&
+                        <div className="edit">
+                            <Link to={`/write?edit=2`} state={post}>
+                                <img src={Edit} alt="Edit" />
+                            </Link>
+                            <img onClick={handleDelete} src={Delete} alt="Delete"/>
+                        </div>
+                    }
                 </div>
-                <h1>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto, ipsum?</h1>
+                <h1>{post.title}</h1>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias animi at culpa distinctio eum, explicabo fugit inventore iusto libero minima molestiae nihil nulla odio quibusdam, sapiente tenetur veniam voluptate.
-                    <br /><br />
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet aperiam cupiditate doloremque esse est excepturi illo illum in inventore ipsam, molestias pariatur perferendis quaerat quasi recusandae reiciendis repellendus sapiente. Omnis.
-                    <br /><br />
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur cumque dolores dolorum eius, esse eum exercitationem expedita ipsum, laudantium maxime modi nisi numquam perspiciatis quae quas quis ratione velit vero.
-                    <br /><br />
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab ad aliquam asperiores aut blanditiis commodi culpa ducimus, eos expedita fugiat laudantium molestiae mollitia non optio quos repudiandae sint sunt, voluptatibus.
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam error eveniet facere iure neque nihil obcaecati optio. Autem cupiditate, deleniti distinctio doloribus iste, nam nihil similique temporibus totam vero voluptatum.
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi impedit non officia reiciendis suscipit. At dicta molestiae odit soluta voluptates! Est incidunt ipsa iusto mollitia optio, temporibus totam vero voluptatum.
+                    { getText(post.desc) }
                 </p>
             </div>
-            <Menu />
+            <Menu cat={post.cat} />
         </div>
     );
 };
