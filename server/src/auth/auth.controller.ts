@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Post,
-  Req, SerializeOptions,
+  Req,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -11,6 +11,8 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/register.dto';
 import { RequestWithUser } from './interfaces/request-with-user.inteface';
 import { LocalAuthGuard } from './guards/local.guard';
+import { GetUser } from '../decorators/get-user.decorator';
+import { User } from '../users/users.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -26,17 +28,16 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req: RequestWithUser) {
-    const { user } = req;
+  async login(@Req() req: RequestWithUser, @GetUser() user: User) {
     console.log('user after login ', user);
-    const token = this.authService.getJwtAccessToken({
+    const { accessTokenCookie } = this.authService.getCookieWithJwtAccessToken({
       id: user.id,
       username: user.username,
       email: user.email,
     });
+    req.res.setHeader('Set-Cookie', [accessTokenCookie]);
     req.res.status(200).json({
       secureUser: user,
-      token,
     });
   }
 }

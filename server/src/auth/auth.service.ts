@@ -11,7 +11,7 @@ import { CreateUserDto } from '../users/dto/register.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { TokenPayload } from './interfaces/access-token-payload.interface';
 import { JwtService } from '@nestjs/jwt';
-import {ConfigService} from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -60,7 +60,7 @@ export class AuthService {
 
   private async verifyPassword(password: string, hashedPassword: string) {
     const isPasswordMatching = await bcrypt.compare(password, hashedPassword);
-    console.log('isPasswordMatching ', isPasswordMatching)
+    console.log('isPasswordMatching ', isPasswordMatching);
     if (!isPasswordMatching) {
       throw new HttpException(
         'Wrong credentials provided',
@@ -69,10 +69,14 @@ export class AuthService {
     }
   }
 
-  public getJwtAccessToken(payload: TokenPayload) {
-    return this.jwtService.sign(payload, {
+  public getCookieWithJwtAccessToken(payload: TokenPayload) {
+    const accessToken = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_ACCESS_SECRET'),
       expiresIn: this.configService.get('JWT_ACCESS_EXPIRATION_TIME'),
     });
+    const accessTokenCookie = `Authentication=${accessToken}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+      'JWT_ACCESS_EXPIRATION_TIME',
+    )}`;
+    return { accessToken, accessTokenCookie };
   }
 }

@@ -14,6 +14,8 @@ interface PostCreationAttrs {
   desc: string;
   img?: string;
   date: string;
+  cat: string;
+  uid: number;
 }
 
 @Table({ tableName: 'posts', createdAt: false, updatedAt: false })
@@ -32,7 +34,7 @@ export class Post extends Model<Post, PostCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   desc: string;
 
-  @Column({ type: DataType.STRING, allowNull: true })
+  @Column({ type: DataType.STRING })
   img: string;
 
   @Column({ type: DataType.DATE, allowNull: false })

@@ -30,7 +30,7 @@ export class UsersService {
 
   public async createUser(registeredData: CreateUserDto) {
     try {
-      return this.userRepository.create(registeredData);
+      return await this.userRepository.create(registeredData);
     } catch (e) {
       console.log('e in createUser');
       throw new BadRequestException();
