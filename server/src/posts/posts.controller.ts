@@ -26,6 +26,11 @@ export class PostsController {
     return await this.postsService.getPosts();
   }
 
+  @Get(':postId')
+  public async getPost(@Param('postId') postId: number) {
+    return await this.postsService.getPost(Number(postId));
+  }
+
   @Post()
   public async createPost(
     @GetUser() user: User,

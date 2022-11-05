@@ -4,8 +4,6 @@ import {
   Table,
   DataType,
   ForeignKey,
-  BelongsTo,
-  BelongsToMany,
 } from 'sequelize-typescript';
 import { User } from '../users/users.entity';
 
@@ -46,4 +44,7 @@ export class Post extends Model<Post, PostCreationAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: false })
   cat: string;
+
+  // @BelongsTo(() => User)
+  // author: User
 }

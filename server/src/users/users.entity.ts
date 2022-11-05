@@ -4,6 +4,7 @@ interface UserCreationAttrs {
   username: string;
   email: string;
   password: string;
+  img: string;
 }
 
 @Table({ tableName: 'users', createdAt: false, updatedAt: false })

@@ -21,9 +21,20 @@ export class UsersService {
 
   public async getUser(username: string) {
     try {
-      return await this.userRepository.findOne({ where: { username } });
+      return await this.userRepository.findOne({
+        where: { username },
+      });
     } catch (e) {
       console.log('e in getUser');
+      throw new HttpException(`Something was wrong`, 400);
+    }
+  }
+
+  public async getUserById(userId: number) {
+    try {
+      return await this.userRepository.findOne({ where: { id: userId } });
+    } catch (e) {
+      console.log('e in getUserById');
       throw new HttpException(`Something was wrong`, 400);
     }
   }

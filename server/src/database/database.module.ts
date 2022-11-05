@@ -18,6 +18,10 @@ import { User } from '../users/users.entity';
         database: configService.get('DB_NAME'),
         models: [User, Post],
         autoLoadModels: true,
+        synchronize: true,
+        query: {
+          raw: true,
+        },
       }),
     }),
   ],

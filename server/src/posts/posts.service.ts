@@ -2,26 +2,49 @@ import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from './posts.entity';
 import { PostDto } from './dto/post.dto';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post)
     private postRepository: typeof Post,
+    private userSevice: UsersService,
   ) {}
 
-  public async getPosts() {
+  public async getPosts(options = { page: 1, limit: 10 }) {
     try {
-      return await this.postRepository.findAll({ include: { all: true } });
+      const { page, limit } = options;
+      const offset = page * limit - limit;
+
+      return await this.postRepository.findAndCountAll({
+        limit,
+        offset,
+      });
     } catch (e) {
       console.log('e in getPosts ', e);
       throw new HttpException(`Something was wrong`, 400);
     }
   }
 
-  public async getPost(postId) {
+  public async getPost(postId: number) {
     try {
-      return await this.postRepository.findOne({ where: { id: postId } });
+      const post = await this.postRepository.findOne({
+        where: { id: postId },
+        raw: true,
+      });
+      console.log('post ', post);
+      const user = await this.userSevice.getUserById(post.uid);
+      return {
+        id: post.id,
+        title: post.title,
+        desc: post.desc,
+        img: post.img,
+        cat: post.cat,
+        date: post.date,
+        userImg: user.img,
+        username: user.username,
+      };
     } catch (e) {
       console.log('e in getPost ', e);
       throw new HttpException(
