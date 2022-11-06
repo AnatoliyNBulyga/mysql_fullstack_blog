@@ -8,15 +8,17 @@ import {
   Put,
   Req,
   Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostDto } from './dto/post.dto';
 import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
 import { GetUser } from '../decorators/get-user.decorator';
 import { User } from '../users/users.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-@UseGuards(JwtAccessGuard)
 @Controller('posts')
 export class PostsController {
   constructor(private postsService: PostsService) {}
@@ -31,17 +33,20 @@ export class PostsController {
     return await this.postsService.getPost(Number(postId));
   }
 
+  @UseGuards(JwtAccessGuard)
   @Post()
+  @UseInterceptors(FileInterceptor('img'))
   public async createPost(
     @GetUser() user: User,
     @Body() post: PostDto,
+    @UploadedFile() img,
     @Res() res,
   ) {
-    console.log('user ', user);
-    await this.postsService.createPost(post, user.id);
+    await this.postsService.createPost({ post, userId: user.id, img });
     return res.status(200).send('The post has been created');
   }
 
+  @UseGuards(JwtAccessGuard)
   @Put(':postId')
   public async updatePost(
     @GetUser() user: User,
@@ -57,6 +62,7 @@ export class PostsController {
     return res.status(200).send('The post has been updated');
   }
 
+  @UseGuards(JwtAccessGuard)
   @Delete(':postId')
   public async deletePost(
     @GetUser() user: User,

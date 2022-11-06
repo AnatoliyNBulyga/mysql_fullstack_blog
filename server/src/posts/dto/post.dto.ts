@@ -12,10 +12,6 @@ export class PostDto {
   readonly desc: string;
 
   @IsString()
-  @IsOptional()
-  readonly img?: string;
-
-  @IsString()
   @IsNotEmpty()
   readonly cat: string;
 

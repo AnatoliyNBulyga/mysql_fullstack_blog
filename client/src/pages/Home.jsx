@@ -12,7 +12,8 @@ const Home = () => {
         const fetchData = async () => {
             try {
                const res = await axios.get(`/posts${search}`)
-               setPosts(res.data)
+               setPosts(res.data.rows)
+                console.log('res.data ', res.data)
             } catch (err) {
                 console.log(err)
             }
@@ -54,7 +55,9 @@ const Home = () => {
                  ? posts.map(post => (
                      <div className="post" key={post.id}>
                          <div className="img">
-                             <img src={`../uploads/${post.img}`} alt="Post preview"/>
+                             {
+                                 post.img && <img src={`http://localhost:8800/${post.img}`} alt="Post preview"/>
+                             }
                          </div>
                          <div className="content">
                              <h1>{post.title}</h1>

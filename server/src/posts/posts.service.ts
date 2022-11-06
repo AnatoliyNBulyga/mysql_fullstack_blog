@@ -2,14 +2,15 @@ import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from './posts.entity';
 import { PostDto } from './dto/post.dto';
-import { UsersService } from '../users/users.service';
+import { FilesService } from '../files/files.service';
+import { User } from '../users/users.entity';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post)
     private postRepository: typeof Post,
-    private userSevice: UsersService,
+    private fileService: FilesService,
   ) {}
 
   public async getPosts(options = { page: 1, limit: 10 }) {
@@ -31,20 +32,12 @@ export class PostsService {
     try {
       const post = await this.postRepository.findOne({
         where: { id: postId },
+        include: User,
         raw: true,
+        nest: true,
       });
       console.log('post ', post);
-      const user = await this.userSevice.getUserById(post.uid);
-      return {
-        id: post.id,
-        title: post.title,
-        desc: post.desc,
-        img: post.img,
-        cat: post.cat,
-        date: post.date,
-        userImg: user.img,
-        username: user.username,
-      };
+      return post;
     } catch (e) {
       console.log('e in getPost ', e);
       throw new HttpException(
@@ -54,13 +47,22 @@ export class PostsService {
     }
   }
 
-  public async createPost(post: PostDto, userId: number) {
+  public async createPost({
+    post,
+    userId,
+    img,
+  }: {
+    post: PostDto;
+    userId: number;
+    img: any;
+  }) {
     try {
+      const imageName = await this.fileService.createFile(img);
       const created = await this.postRepository.create({
         ...post,
+        img: imageName,
         uid: userId,
       });
-      console.log('created ', created);
       return created;
     } catch (e) {
       console.log('e in createPost ', e);

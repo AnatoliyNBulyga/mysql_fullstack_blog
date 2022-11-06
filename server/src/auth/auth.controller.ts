@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Post,
-  Req,
+  Req, Res,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -28,15 +28,15 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req: RequestWithUser, @GetUser() user: User) {
+  async login(@GetUser() user: User, @Res() res) {
     console.log('user after login ', user);
     const { accessTokenCookie } = this.authService.getCookieWithJwtAccessToken({
       id: user.id,
       username: user.username,
       email: user.email,
     });
-    req.res.setHeader('Set-Cookie', [accessTokenCookie]);
-    req.res.status(200).json({
+    res.setHeader('Set-Cookie', [accessTokenCookie]);
+    res.status(200).json({
       secureUser: user,
     });
   }
