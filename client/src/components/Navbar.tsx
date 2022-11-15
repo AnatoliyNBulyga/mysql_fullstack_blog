@@ -2,11 +2,20 @@ import React, {useContext} from 'react';
 import Logo from "../img/logo.png";
 import {Link} from "react-router-dom";
 import {AuthContext} from "../context/authContext";
+import {authAPI} from "../store/services/AuthService";
 
 const Navbar = () => {
 
-    const { currentUser, logout } = useContext(AuthContext)
-    
+
+    const [logout, {data, isLoading, error}] = authAPI.useLogoutMutation();
+    const currentUser = {
+        username: 'Anatoliy'
+    }
+
+    const onclickHandler = async () => {
+        await logout();
+    }
+
     return (
         <div className="navbar">
             <div className="container">
@@ -37,7 +46,7 @@ const Navbar = () => {
                     <span>{currentUser?.username}</span>
                     {
                         currentUser
-                            ? <span onClick={logout}>Logout</span>
+                            ? <span onClick={onclickHandler}>Logout</span>
                             : <Link className="link" to="/login">Login</Link>
                     }
                     <span className="write">

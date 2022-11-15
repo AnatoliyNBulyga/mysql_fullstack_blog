@@ -4,6 +4,8 @@ import { Post } from './posts.entity';
 import { PostDto } from './dto/post.dto';
 import { FilesService } from '../files/files.service';
 import { User } from '../users/users.entity';
+import { IUser } from '../interfaces/users';
+import { IPost } from '../interfaces/posts';
 
 @Injectable()
 export class PostsService {
@@ -13,22 +15,31 @@ export class PostsService {
     private fileService: FilesService,
   ) {}
 
-  public async getPosts(options = { page: 1, limit: 10 }) {
+  public async getPosts(
+    options = { page: 1, limit: 10 },
+  ): Promise<{ count: number; rows: IPost[] }> {
     try {
       const { page, limit } = options;
       const offset = page * limit - limit;
 
-      return await this.postRepository.findAndCountAll({
+      const posts = await this.postRepository.findAndCountAll({
         limit,
         offset,
       });
+      if (!posts) {
+        throw new HttpException(`Any posts were not found`, 404);
+      }
+      return posts;
     } catch (e) {
       console.log('e in getPosts ', e);
-      throw new HttpException(`Something was wrong`, 400);
+      throw new HttpException(
+        e.response ?? `Something was wrong`,
+        e.status ?? 400,
+      );
     }
   }
 
-  public async getPost(postId: number) {
+  public async getPost(postId: number): Promise<IPost & { author: IUser }> {
     try {
       const post = await this.postRepository.findOne({
         where: { id: postId },
@@ -36,13 +47,19 @@ export class PostsService {
         raw: true,
         nest: true,
       });
+      if (!post) {
+        throw new HttpException(
+          `Post with post id ${postId} was not found`,
+          404,
+        );
+      }
       console.log('post ', post);
       return post;
     } catch (e) {
       console.log('e in getPost ', e);
       throw new HttpException(
-        `Something was wrong with post id ${postId}`,
-        400,
+        e.response ?? `Something was wrong with post id ${postId}`,
+        e.status ?? 400,
       );
     }
   }
@@ -55,7 +72,7 @@ export class PostsService {
     post: PostDto;
     userId: number;
     img: any;
-  }) {
+  }): Promise<IPost> {
     try {
       const imageName = await this.fileService.createFile(img);
       const created = await this.postRepository.create({
@@ -63,10 +80,16 @@ export class PostsService {
         img: imageName,
         uid: userId,
       });
+      if (!created) {
+        throw new BadRequestException();
+      }
       return created;
     } catch (e) {
       console.log('e in createPost ', e);
-      throw new HttpException(`Unable to create post`, 400);
+      throw new HttpException(
+        e.response ?? `Unable to create post`,
+        e.status ?? 400,
+      );
     }
   }
 
@@ -78,7 +101,7 @@ export class PostsService {
     post: PostDto;
     postId: number;
     userId: number;
-  }) {
+  }): Promise<number[]> {
     try {
       const updated = await this.postRepository.update(
         {
@@ -97,7 +120,10 @@ export class PostsService {
       return updated;
     } catch (e) {
       console.log('e in updatePost ', e);
-      throw new HttpException(`Unable to update post`, 400);
+      throw new HttpException(
+        e.response ?? `Unable to update post`,
+        e.status ?? 400,
+      );
     }
   }
 
@@ -118,8 +144,9 @@ export class PostsService {
     } catch (e) {
       console.log('e in deletePost ', e);
       throw new HttpException(
-        `Unable to delete post with post id ${postId} and user id ${userId}`,
-        400,
+        e.response ??
+          `Unable to delete post with post id ${postId} and user id ${userId}`,
+        e.status ?? 400,
       );
     }
   }

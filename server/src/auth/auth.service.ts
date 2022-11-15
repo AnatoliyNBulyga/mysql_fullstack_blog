@@ -3,12 +3,10 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../users/dto/register.dto';
-import { LoginUserDto } from './dto/login-user.dto';
 import { TokenPayload } from './interfaces/access-token-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';

@@ -33,7 +33,7 @@ export class Post extends Model<Post, PostCreationAttrs> {
   desc: string;
 
   @Column({ type: DataType.STRING })
-  img: string;
+  img: string | null;
 
   @Column({ type: DataType.STRING, allowNull: false })
   cat: string;

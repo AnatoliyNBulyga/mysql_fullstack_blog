@@ -1,25 +1,22 @@
-import React, {useEffect, useState} from 'react';
-import {Link, useLocation} from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {getText} from "../utils";
+import {postAPI} from "../store/services/PostService";
 
-const Home = () => {
-    const [posts, setPosts] = useState([])
+const Menu = ({cat}: {cat: string}) => {
+    // const [posts, setPosts] = useState([]);
+    const {data: posts} = postAPI.useFetchAllPostsQuery(`/posts/?cat=${cat}`);
 
-    const { search } = useLocation()
-
-    useEffect ( () => {
-        const fetchData = async () => {
-            try {
-               const res = await axios.get(`/posts${search}`)
-               setPosts(res.data.rows)
-                console.log('res.data ', res.data)
-            } catch (err) {
-                console.log(err)
-            }
-        }
-        fetchData()
-    }, [search])
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const res = await axios.get(`/posts/?cat=${cat}`);
+    //             setPosts(res.data);
+    //         } catch (err) {
+    //             console.log(err);
+    //         }
+    //     };
+    //     fetchData();
+    // }, [cat]);
     // const posts = [
     //   {
     //     id: 1,
@@ -46,33 +43,18 @@ const Home = () => {
     //     img: "https://images.pexels.com/photos/6157049/pexels-photo-6157049.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
     //   },
     // ];
-
     return (
-        <div className="home">
-         <div className="posts">
-             {
-                 posts.length
-                 ? posts.map(post => (
-                     <div className="post" key={post.id}>
-                         <div className="img">
-                             {
-                                 post.img && <img src={`http://localhost:8800/${post.img}`} alt="Post preview"/>
-                             }
-                         </div>
-                         <div className="content">
-                             <h1>{post.title}</h1>
-                             <p>{getText(post.desc)}</p>
-                             <Link className="link" to={`/post/${post.id}`}>
-                                <button>Read More</button>
-                             </Link>
-                         </div>
-                     </div>
-                 ))
-                 : <div>We have no posts!</div>
-             }
-         </div>
+        <div className="menu">
+            <h1>Other posts you may like</h1>
+            {posts && posts.map((post) => (
+                <div className="post" key={post.id}>
+                    <img src={`../uploads/${post?.img}`} alt="Post preview" />
+                    <h2>{post.title}</h2>
+                    <button>Read More</button>
+                </div>
+            ))}
         </div>
     );
 };
 
-export default Home;
+export default Menu;

@@ -10,7 +10,7 @@ const Write = () => {
     const { state } = useLocation()
     const [value, setValue] = useState(state?.desc ?? '')
     const [title, setTitle] = useState(state?.title ?? '')
-    const [file, setFile] = useState(null)
+    const [file, setFile] = useState<string|Blob>('')
     const [cat, setCat] = useState(state?.cat ?? '')
     const navigate = useNavigate()
 
@@ -25,7 +25,7 @@ const Write = () => {
         }
     }
 
-    const handlePublish = async (e) => {
+    const handlePublish = async (e: any) => {
         e.preventDefault()
 
         const imgSrc = await upload()
@@ -72,7 +72,7 @@ const Write = () => {
                     <span>
                         <b>Visibility: </b> Public
                     </span>
-                    <input style={{display: "none"}} type="file" id="file" name="" onChange={e => setFile(e.target.files[0])}/>
+                    <input style={{display: "none"}} type="file" id="file" name="" onChange={(e: any) => setFile(e.target.files[0])}/>
                     <label htmlFor="file">Upload Image</label>
                     <div className="buttons">
                         <button>Save as a draft</button>

@@ -27,5 +27,5 @@ export class User extends Model<User, UserCreationAttrs> {
   password: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
-  img: string;
+  img: string | null;
 }

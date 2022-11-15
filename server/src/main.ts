@@ -5,7 +5,9 @@ import { ClassSerializerInterceptor } from '@nestjs/common';
 
 async function bootstrap() {
   const PORT = process.env.PORT || 5000;
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
+  const whiteList = ['http://localhost:3000', 'http://localhost:8800'];
+  app.enableCors({ origin: whiteList, credentials: true });
   app.setGlobalPrefix('api');
   app.use(cookieParser());
 
