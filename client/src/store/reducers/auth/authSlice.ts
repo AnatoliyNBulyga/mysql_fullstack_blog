@@ -3,12 +3,7 @@ import {AuthState} from "./types";
 import {ISecureUser} from "../../../models/ISecureUser";
 
 const initialState: AuthState = {
-    currentUser: {
-        id: null,
-        username: '',
-        email: '',
-        img: ''
-    },
+    currentUser: null,
     isLoading: false,
     error: '',
     isLoggedIn: false
@@ -18,9 +13,8 @@ export const authSlice = createSlice({
     name: 'post',
     initialState,
     reducers: {
-        setCurrentUser: (state, { payload }: PayloadAction<ISecureUser>) => {
+        setCurrentUser: (state, { payload }: PayloadAction<ISecureUser | null>) => {
             state.currentUser = payload
-            localStorage.setItem("user", JSON.stringify(payload));
         },
     },
     /* As alternative to authAPI

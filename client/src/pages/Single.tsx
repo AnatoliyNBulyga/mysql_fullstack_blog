@@ -19,7 +19,7 @@ const Single = () => {
     console.log('data from single page ', post)
 
 
-    // const { currentUser } = useContext(AuthContext)
+    // const { currentUser } = useContext(_authContext)
 
     // useEffect ( () => {
     //     const fetchData = async () => {

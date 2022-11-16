@@ -1,20 +1,44 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import Logo from "../img/logo.png";
 import {Link} from "react-router-dom";
-import {AuthContext} from "../context/authContext";
 import {authAPI} from "../store/services/AuthService";
+import {useAppDispatch, useAppSelector} from "../hooks/redux";
+import {authSlice} from "../store/reducers/auth/authSlice";
 
 const Navbar = () => {
 
 
-    const [logout, {data, isLoading, error}] = authAPI.useLogoutMutation();
-    const currentUser = {
-        username: 'Anatoliy'
-    }
+    const [logout, {error}] = authAPI.useLogoutMutation();
+    const {currentUser, isLoading} = useAppSelector(state => state.authReducer);
+    const dispatch = useAppDispatch()
+
+    console.log('current user ', currentUser)
 
     const onclickHandler = async () => {
-        await logout();
+        const result = await logout() as { data: boolean };
+        console.log('result ', result)
+        if (result.data) {
+            dispatch(authSlice.actions.setCurrentUser(null))
+            localStorage.removeItem("user");
+        }
     }
+
+    if (isLoading) return <div>Loading...</div>
+
+    // Error handling
+    let errMsg;
+    if (error) {
+        let errMsg;
+        if ('status' in error) {
+            // you can access all properties of `FetchBaseQueryError` here
+            errMsg = 'error' in error ? error.error : (error.data as { status: string, message: string }).message
+        } else {
+            // you can access all properties of `SerializedError` here
+            errMsg = error.message
+        }
+    }
+
+    if (error) return <div>{errMsg}</div>
 
     return (
         <div className="navbar">

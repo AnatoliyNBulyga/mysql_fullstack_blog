@@ -3,6 +3,7 @@ import {ILogin} from "../../models/ILogin";
 import {ISecureUser} from "../../models/ISecureUser";
 import {ISecureUserServerResponse} from "../../models/ISecureUserServerResponse";
 import {IRegister} from "../../models/IRegister";
+import {ILogoutServerResponse} from "../../models/ILogoutServerResponse";
 
 
 export const authAPI = createApi({
@@ -25,9 +26,10 @@ export const authAPI = createApi({
                 url: '/logout',
                 credentials: "include",
                 method: 'POST',
-                body: null,
+                body: "",
             }),
             invalidatesTags: ['Auth'],
+            transformResponse: (response: ILogoutServerResponse) => response.success,
         }),
         register: build.mutation({
             query: (register: IRegister) => ({

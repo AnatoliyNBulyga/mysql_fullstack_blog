@@ -8,19 +8,24 @@ import {ISecureUser} from "../models/ISecureUser";
 
 
 const Login = () => {
-    let errMsg;
+
     const [inputs, setInputs] = useState<ILogin>({
         username: "",
         password: ""
     })
-    const [loading, setLoading] = useState<boolean>(false)
+
+    // Use RTK queries
     const [login, {isLoading, error}] = authAPI.useLoginMutation();
+
+    const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+
     const handleChange = (e: any) => {
         setInputs(prev => ({...prev, [e.target.name]: e.target.value}))
     };
     console.log('inputs ', inputs)
+
     const handleSubmit = async (e: any) => {
         e.preventDefault()
         try {
@@ -29,6 +34,7 @@ const Login = () => {
             console.log('result ', result)
             if (result.data) {
                 dispatch(authSlice.actions.setCurrentUser(result.data))
+                localStorage.setItem("user", JSON.stringify(result.data));
                 navigate("/")
             }
         } catch (err) {
@@ -38,6 +44,7 @@ const Login = () => {
     };
 
     // Error handling
+    let errMsg;
     if (error) {
         if ('status' in error) {
             // you can access all properties of `FetchBaseQueryError` here

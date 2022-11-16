@@ -14,6 +14,7 @@ import { CreateUserDto } from '../users/dto/register.dto';
 import { LocalAuthGuard } from './guards/local.guard';
 import { GetUser } from '../decorators/get-user.decorator';
 import { User } from '../users/users.entity';
+import { JwtAccessGuard } from './guards/jwt-access.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -48,11 +49,13 @@ export class AuthController {
     }
   }
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(JwtAccessGuard)
   @Post('logout')
   async logout(@GetUser() user: User, @Res() res) {
     console.log('user after logout ', user);
-
-    res.status(200).send('Logout is success!');
+    const removeCookie = this.authService.getCookieForLogOut();
+    console.log(removeCookie, 'removeCookie');
+    res.setHeader('Set-Cookie', this.authService.getCookieForLogOut());
+    res.status(200).json({ success: true });
   }
 }

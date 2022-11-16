@@ -7,24 +7,24 @@ interface loginInputParams {
 }
 
 interface AuthContextInterface {
-    currentUser: string | null;
+    currentUser: string | {};
     login: (inputs: loginInputParams) => void;
     logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextInterface | null>(null);
+export const authContext = createContext<AuthContextInterface | null>(null);
 
 export const AuthContextProvider = ({children}: {children: any}) => {
-    const [currentUser, setCurrentUser] = useState<string | null>(JSON.parse(localStorage.getItem("user") || ""))
+    const [currentUser, setCurrentUser] = useState<string | {}>(JSON.parse(localStorage.getItem("user") || "{}"))
 
     const login = async (inputs: loginInputParams) => {
-        const res = await axios.post("/auth/login", inputs)
+        const res = await axios.post("/auth/login", inputs, {withCredentials: true})
         setCurrentUser(res.data)
     }
 
     const logout = async () => {
-        const res = await axios.get("/auth/logout")
-        setCurrentUser(null)
+        const res = await axios.post("/auth/logout", {}, {withCredentials: true})
+        setCurrentUser({})
     }
 
     useEffect(() => {
@@ -32,8 +32,8 @@ export const AuthContextProvider = ({children}: {children: any}) => {
     }, [currentUser])
 
     return (
-        <AuthContext.Provider value={{ currentUser, login, logout }}>
+        <authContext.Provider value={{ currentUser, login, logout }}>
             {children}
-        </AuthContext.Provider>
+        </authContext.Provider>
     )
 }
