@@ -24,7 +24,7 @@ export class AuthService {
       // CHECK EXISTING USER
       const candidate = await this.userService.getUser(registrationData.email);
       if (candidate) {
-        new HttpException(
+        throw new HttpException(
           `User with email ${registrationData.email} is exist`,
           400,
         );
@@ -38,7 +38,10 @@ export class AuthService {
       });
     } catch (e) {
       console.log('ERROR in register ', e);
-      throw new BadRequestException();
+      throw new HttpException(
+        e.response ?? `An unknown error occurred`,
+        e.status ?? HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -47,6 +50,7 @@ export class AuthService {
       const user = await this.userService.getUser(username);
       await this.verifyPassword(password, user.password);
       user.password = undefined;
+      user.hashedRefreshToken = undefined;
       return user;
     } catch (e) {
       throw new HttpException(
@@ -81,7 +85,30 @@ export class AuthService {
   public getCookieForLogOut() {
     return [
       `Authentication=; HttpOnly; Path=/; Max-Age=0`,
-      // `Refresh=; HttpOnly; Path=/; Max-Age=0`,
+      `Refresh=; HttpOnly; Path=/; Max-Age=0`,
     ];
+  }
+
+  public getCookieWithJwtRefreshToken(payload: TokenPayload) {
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_SECRET'),
+      expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION_TIME'),
+    });
+    const refreshTokenCookie = `Refresh=${refreshToken}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+      'JWT_REFRESH_EXPIRATION_TIME',
+    )}`;
+    return {
+      refreshTokenCookie,
+      refreshToken,
+    };
+  }
+
+  public async logout(userId: number) {
+    try {
+      await this.userService.removeRefreshToken(userId);
+      return this.getCookieForLogOut();
+    } catch (e) {
+      throw new HttpException('Something is wrong', HttpStatus.BAD_REQUEST);
+    }
   }
 }

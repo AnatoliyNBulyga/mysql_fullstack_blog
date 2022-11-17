@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   Res,
   UploadedFile,
@@ -24,8 +25,8 @@ export class PostsController {
   constructor(private postsService: PostsService) {}
 
   @Get()
-  public async getPosts() {
-    return await this.postsService.getPosts();
+  public async getPosts(@Query('cat') category: string) {
+    return await this.postsService.getPosts(category);
   }
 
   @Get(':postId')

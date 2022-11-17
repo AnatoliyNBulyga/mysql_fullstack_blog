@@ -1,7 +1,14 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { User } from './users.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/register.dto';
+import * as bcrypt from 'bcrypt';
+import { use } from 'passport';
 
 @Injectable()
 export class UsersService {
@@ -45,6 +52,71 @@ export class UsersService {
     } catch (e) {
       console.log('e in createUser');
       throw new BadRequestException();
+    }
+  }
+
+  public async getUserWithRefreshToken(refreshToken: string, userId: number) {
+    try {
+      const user = await this.getUserById(userId);
+      const isRefreshTokenMatching = await bcrypt.compare(
+        refreshToken,
+        user.hashedRefreshToken,
+      );
+      if (!isRefreshTokenMatching) {
+        throw new HttpException('Invalid refresh token', HttpStatus.NOT_FOUND);
+      }
+      return user;
+    } catch (e) {
+      console.log(e);
+      throw new HttpException(
+        e.response ?? `An unknown error occurred`,
+        e.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  public async removeRefreshToken(userId: number) {
+    try {
+      const removeToken = await this.userRepository.update(
+        {
+          hashedRefreshToken: null,
+        },
+        {
+          where: {
+            id: userId,
+          },
+        },
+      );
+      return removeToken;
+    } catch (e) {
+      console.log(e);
+      return new HttpException(
+        'An unknown error occurred',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  public async setCurrentRefreshToken(refreshToken: string, userId: number) {
+    try {
+      const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 8);
+      await this.userRepository.update(
+        {
+          hashedRefreshToken: currentHashedRefreshToken,
+        },
+        {
+          where: {
+            id: userId,
+          },
+        },
+      );
+      return true;
+    } catch (e) {
+      console.log(e);
+      return new HttpException(
+        'Set Refresh Token ERROR',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

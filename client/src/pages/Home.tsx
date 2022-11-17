@@ -6,29 +6,10 @@ import { fetchPosts } from "../store/reducers/posts/ActionCreators";
 import {postAPI} from "../store/services/PostService";
 
 const Home = () => {
-    // const [posts, setPosts] = useState([])
-
     const { search } = useLocation()
 
-    const dispatch = useDispatch()
     const {data: posts, isLoading, error} = postAPI.useFetchAllPostsQuery(search)
 
-    console.log('posts ', posts)
-
-    // useEffect ( () => {
-    //     dispatch(fetchPosts(search)())
-    //     // const fetchData = async () => {
-    //     //     try {
-    //     //        const res = await axios.get(`/posts${search}`)
-    //     //        setPosts(res.data.rows)
-    //     //         console.log('res.data ', res.data)
-    //     //     } catch (err) {
-    //     //         console.log(err)
-    //     //     }
-    //     // }
-    //     // fetchData()
-    //
-    // }, [search])
     // const posts = [
     //   {
     //     id: 1,
@@ -55,6 +36,26 @@ const Home = () => {
     //     img: "https://images.pexels.com/photos/6157049/pexels-photo-6157049.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
     //   },
     // ];
+
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
+
+    // Error handling
+    let errMsg;
+    if (error) {
+        if ('status' in error) {
+            // you can access all properties of `FetchBaseQueryError` here
+            errMsg = 'error' in error ? error.error : (error.data as { status: string, message: string }).message
+        } else {
+            // you can access all properties of `SerializedError` here
+            errMsg = error.message
+        }
+    }
+
+    if (error) {
+        return <div>{errMsg}</div>
+    }
 
     return (
         <div className="home">

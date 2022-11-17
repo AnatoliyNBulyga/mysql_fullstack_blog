@@ -6,6 +6,7 @@ import { FilesService } from '../files/files.service';
 import { User } from '../users/users.entity';
 import { IUser } from '../interfaces/users';
 import { IPost } from '../interfaces/posts';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class PostsService {
@@ -16,16 +17,20 @@ export class PostsService {
   ) {}
 
   public async getPosts(
+    category: string,
     options = { page: 1, limit: 10 },
   ): Promise<{ count: number; rows: IPost[] }> {
     try {
       const { page, limit } = options;
       const offset = page * limit - limit;
-
       const posts = await this.postRepository.findAndCountAll({
+        where: {
+          cat: category ? category : { [Op.not]: null },
+        },
         limit,
         offset,
       });
+
       if (!posts) {
         throw new HttpException(`Any posts were not found`, 404);
       }

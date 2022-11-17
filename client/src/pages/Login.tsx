@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
 import {Link, useNavigate} from "react-router-dom"
-import {ILogin} from "../models/ILogin";
+import {ILogin} from "../models/auth/ILogin";
 import {useAppDispatch} from "../hooks/redux";
 import {authAPI} from "../store/services/AuthService";
 import {authSlice} from "../store/reducers/auth/authSlice";
-import {ISecureUser} from "../models/ISecureUser";
+import {ISecureUser} from "../models/users/ISecureUser";
 
 
 const Login = () => {
@@ -15,7 +15,7 @@ const Login = () => {
     })
 
     // Use RTK queries
-    const [login, {isLoading, error}] = authAPI.useLoginMutation();
+    const [login, {isLoading, error}] = authAPI.useLoginMutation()
 
     const [loading, setLoading] = useState<boolean>(false)
     const dispatch = useAppDispatch()
@@ -28,19 +28,15 @@ const Login = () => {
 
     const handleSubmit = async (e: any) => {
         e.preventDefault()
-        try {
-            setLoading(true)
-            const result = await login(inputs) as { data: ISecureUser }
-            console.log('result ', result)
-            if (result.data) {
-                dispatch(authSlice.actions.setCurrentUser(result.data))
-                localStorage.setItem("user", JSON.stringify(result.data));
-                navigate("/")
-            }
-        } catch (err) {
-            console.log(err);
-            setLoading(true)
+        setLoading(true)
+        const result = await login(inputs) as { data: ISecureUser }
+        console.log('result ', result)
+        if (result.data) {
+            dispatch(authSlice.actions.setCurrentUser(result.data))
+            localStorage.setItem("user", JSON.stringify(result.data))
+            navigate("/")
         }
+        setLoading(false)
     };
 
     // Error handling
@@ -53,6 +49,10 @@ const Login = () => {
             // you can access all properties of `SerializedError` here
             errMsg = error.message
         }
+    }
+
+    if (isLoading) {
+        return <div>Loading...</div>
     }
 
     return (

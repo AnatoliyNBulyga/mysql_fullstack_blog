@@ -1,7 +1,7 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
-import {IPost} from "../../models/IPost";
-import {IUser} from "../../models/IUser";
-import {IPostsServerResponse} from "../../models/IPostsServerResponse";
+import {IPost} from "../../models/posts/IPost";
+import {IUser} from "../../models/users/IUser";
+import {IPostsServerResponse} from "../../models/server-response/IPostsServerResponse";
 
 export const postAPI = createApi({
     reducerPath: 'postAPI',

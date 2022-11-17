@@ -1,4 +1,4 @@
-import {IPost} from "./IPost";
+import {IPost} from "../posts/IPost";
 
 export interface IPostsServerResponse {
     count: number;

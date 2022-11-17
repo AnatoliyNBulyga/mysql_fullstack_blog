@@ -4,6 +4,7 @@ interface UserCreationAttrs {
   username: string;
   email: string;
   password: string;
+  hashedRefreshToken: string;
   img: string;
 }
 
@@ -25,6 +26,9 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @Column({ type: DataType.STRING, allowNull: false })
   password: string;
+
+  @Column({ type: DataType.STRING, allowNull: false })
+  hashedRefreshToken: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
   img: string | null;

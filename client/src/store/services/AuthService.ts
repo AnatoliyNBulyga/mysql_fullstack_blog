@@ -1,9 +1,9 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
-import {ILogin} from "../../models/ILogin";
-import {ISecureUser} from "../../models/ISecureUser";
-import {ISecureUserServerResponse} from "../../models/ISecureUserServerResponse";
-import {IRegister} from "../../models/IRegister";
-import {ILogoutServerResponse} from "../../models/ILogoutServerResponse";
+import {ILogin} from "../../models/auth/ILogin";
+import {ISecureUser} from "../../models/users/ISecureUser";
+import {ISecureUserServerResponse} from "../../models/server-response/ISecureUserServerResponse";
+import {IRegister} from "../../models/auth/IRegister";
+import {ILogoutServerResponse} from "../../models/server-response/ILogoutServerResponse";
 
 
 export const authAPI = createApi({
@@ -31,7 +31,7 @@ export const authAPI = createApi({
             invalidatesTags: ['Auth'],
             transformResponse: (response: ILogoutServerResponse) => response.success,
         }),
-        register: build.mutation({
+        register: build.mutation<boolean, IRegister>({
             query: (register: IRegister) => ({
                 url: '/register',
                 method: 'POST',

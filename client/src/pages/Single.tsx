@@ -7,31 +7,15 @@ import axios from "axios";
 import moment from "moment";
 import {getText} from "../utils/get-text";
 import {postAPI} from "../store/services/PostService";
+import {useAppSelector} from "../hooks/redux";
 
 
 const Single = () => {
-    // const [post, setPost] = useState({})
 
     const { id } = useParams()
     const navigate = useNavigate()
     const { data: post, isLoading, error } = postAPI.useFetchPostQuery(Number(id));
-
-    console.log('data from single page ', post)
-
-
-    // const { currentUser } = useContext(_authContext)
-
-    // useEffect ( () => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const res = await axios.get(`/posts/${id}`)
-    //             setPost(res.data)
-    //         } catch (err) {
-    //             console.log(err)
-    //         }
-    //     }
-    //     fetchData()
-    // }, [id])
+    const {currentUser} = useAppSelector(state => state.authReducer);
 
     const handleDelete = async () => {
         try {
@@ -66,15 +50,15 @@ const Single = () => {
                                     <span>{post.author.username}</span>
                                     <p>Posted {moment(post.createdAt).fromNow()}</p>
                                 </div>
-                                {/*{*/}
-                                {/*    currentUser.username === post.username &&*/}
-                                {/*    <div className="edit">*/}
-                                {/*        <Link to={`/write?edit=2`} state={post}>*/}
-                                {/*            <img src={editIconSrc} alt="Edit" />*/}
-                                {/*        </Link>*/}
-                                {/*        <img onClick={handleDelete} src={deleteIconSrc} alt="Delete"/>*/}
-                                {/*    </div>*/}
-                                {/*}*/}
+                                {
+                                    currentUser?.username === post.author.username &&
+                                    <div className="edit">
+                                        <Link to={`/write?edit=2`} state={post}>
+                                            <img src={editIconSrc} alt="Edit" />
+                                        </Link>
+                                        <img onClick={handleDelete} src={deleteIconSrc} alt="Delete"/>
+                                    </div>
+                                }
                             </div>
                             <h1>{post.title}</h1>
                             <p>

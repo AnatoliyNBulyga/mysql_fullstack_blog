@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   Req,
   Res,
@@ -15,6 +16,9 @@ import { LocalAuthGuard } from './guards/local.guard';
 import { GetUser } from '../decorators/get-user.decorator';
 import { User } from '../users/users.entity';
 import { JwtAccessGuard } from './guards/jwt-access.guard';
+import { TokenPayload } from './interfaces/access-token-payload.interface';
+import JwtRefreshGuard from './guards/jwt-refresh.guard';
+import { RequestWithUser } from './interfaces/request-with-user.inteface';
 
 @Controller('auth')
 export class AuthController {
@@ -25,7 +29,7 @@ export class AuthController {
   async register(@Req() req: any, @Body() registrationData: CreateUserDto) {
     const registeredUser = await this.authService.register(registrationData);
     console.log(registeredUser, 'registeredUser');
-    req.res.status(200).send('User has been created!');
+    req.res.status(200).json({ success: true });
   }
 
   @UseGuards(LocalAuthGuard)
@@ -33,13 +37,16 @@ export class AuthController {
   async login(@GetUser() user: User, @Res() res) {
     try {
       console.log('user after login ', user);
+      const payload: TokenPayload = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+      };
       const { accessTokenCookie } =
-        this.authService.getCookieWithJwtAccessToken({
-          id: user.id,
-          username: user.username,
-          email: user.email,
-        });
-      res.setHeader('Set-Cookie', [accessTokenCookie]);
+        this.authService.getCookieWithJwtAccessToken(payload);
+      const { refreshTokenCookie } =
+        this.authService.getCookieWithJwtRefreshToken(payload);
+      res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
       res.status(200).json({
         secureUser: user,
       });
@@ -53,9 +60,22 @@ export class AuthController {
   @Post('logout')
   async logout(@GetUser() user: User, @Res() res) {
     console.log('user after logout ', user);
-    const removeCookie = this.authService.getCookieForLogOut();
-    console.log(removeCookie, 'removeCookie');
-    res.setHeader('Set-Cookie', this.authService.getCookieForLogOut());
+    const logoutCookie = await this.authService.logout(user.id);
+    res.setHeader('Set-Cookie', logoutCookie);
     res.status(200).json({ success: true });
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Get('refresh')
+  refresh(@Req() request: RequestWithUser, @GetUser() user: User) {
+    const payload: TokenPayload = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
+    const { accessTokenCookie } =
+      this.authService.getCookieWithJwtAccessToken(payload);
+    request.res.setHeader('Set-Cookie', accessTokenCookie);
+    return user;
   }
 }

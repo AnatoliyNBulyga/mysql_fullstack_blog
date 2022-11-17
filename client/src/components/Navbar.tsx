@@ -49,14 +49,14 @@ const Navbar = () => {
                     </span>
                 </Link>
                 <div className="links">
+                    <Link className="link" to="/">
+                        <h6>ALL</h6>
+                    </Link>
                     <Link className="link" to="/?cat=art">
                         <h6>ART</h6>
                     </Link>
                     <Link className="link" to="/?cat=science">
                         <h6>SCIENCE</h6>
-                    </Link>
-                    <Link className="link" to="/?cat=technology">
-                        <h6>TECHNOLOGY</h6>
                     </Link>
                     <Link className="link" to="/?cat=cinema">
                         <h6>CINEMA</h6>
