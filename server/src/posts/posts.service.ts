@@ -137,14 +137,13 @@ export class PostsService {
       const deleted = await this.postRepository.destroy({
         where: {
           id: postId,
-          uid: userId,
+          uid: userId, // If uid is not matching, it will return 0
         },
       });
       console.log('deleted ', deleted);
       if (!deleted) {
         throw new BadRequestException();
       }
-      console.log('!deleted 2');
       return deleted;
     } catch (e) {
       console.log('e in deletePost ', e);

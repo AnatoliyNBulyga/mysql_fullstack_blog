@@ -44,7 +44,9 @@ export class PostsController {
     @Res() res,
   ) {
     await this.postsService.createPost({ post, userId: user.id, img });
-    return res.status(200).send('The post has been created');
+    return res
+      .status(200)
+      .json({ success: true, message: 'The post has been created' });
   }
 
   @UseGuards(JwtAccessGuard)
@@ -60,7 +62,9 @@ export class PostsController {
       postId: Number(postId),
       userId: Number(user.id),
     });
-    return res.status(200).send('The post has been updated');
+    return res
+      .status(200)
+      .json({ success: true, message: 'The post has been updated' });
   }
 
   @UseGuards(JwtAccessGuard)
@@ -71,6 +75,8 @@ export class PostsController {
     @Res() res,
   ) {
     await this.postsService.deletePost(Number(postId), Number(user.id));
-    return res.status(200).send('The post has been deleted');
+    return res
+      .status(200)
+      .json({ success: true, message: 'The post has been deleted' });
   }
 }

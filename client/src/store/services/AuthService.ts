@@ -6,9 +6,12 @@ import {IRegister} from "../../models/auth/IRegister";
 import {ILogoutServerResponse} from "../../models/server-response/ILogoutServerResponse";
 
 
+
 export const authAPI = createApi({
     reducerPath: 'authAPI',
-    baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:8800/api/auth'}),
+    baseQuery: fetchBaseQuery(
+        { baseUrl: 'http://localhost:8800/api/auth' }
+    ),
     tagTypes: ['Auth'],
     endpoints: (build) => ({
         login: build.mutation<ISecureUser, ILogin>({

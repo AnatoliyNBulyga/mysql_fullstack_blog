@@ -31,8 +31,8 @@ const Login = () => {
         setLoading(true)
         const result = await login(inputs) as { data: ISecureUser }
         console.log('result ', result)
-        if (result.data) {
-            dispatch(authSlice.actions.setCurrentUser(result.data))
+        if ((result).data) {
+            dispatch(authSlice.actions.setCredentials(result.data))
             localStorage.setItem("user", JSON.stringify(result.data))
             navigate("/")
         }

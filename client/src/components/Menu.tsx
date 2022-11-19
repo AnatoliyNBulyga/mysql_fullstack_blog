@@ -4,7 +4,7 @@ import {postAPI} from "../store/services/PostService";
 
 const Menu = ({cat}: {cat: string}) => {
     // const [posts, setPosts] = useState([]);
-    const {data: posts} = postAPI.useFetchAllPostsQuery(`/posts/?cat=${cat}`);
+    const { data: posts } = postAPI.useFetchAllPostsQuery(`?cat=${cat}`);
 
     // useEffect(() => {
     //     const fetchData = async () => {
@@ -48,7 +48,9 @@ const Menu = ({cat}: {cat: string}) => {
             <h1>Other posts you may like</h1>
             {posts && posts.map((post) => (
                 <div className="post" key={post.id}>
-                    <img src={`../uploads/${post?.img}`} alt="Post preview" />
+                    {
+                        post.img && <img src={`${process.env.REACT_APP_BACKEND_URL}/${post?.img}`} alt="Post preview" />
+                    }
                     <h2>{post.title}</h2>
                     <button>Read More</button>
                 </div>

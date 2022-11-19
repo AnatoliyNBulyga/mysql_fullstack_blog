@@ -60,7 +60,7 @@ export class UsersService {
       const user = await this.getUserById(userId);
       const isRefreshTokenMatching = await bcrypt.compare(
         refreshToken,
-        user.hashedRefreshToken,
+        user.hashed_refresh_token,
       );
       if (!isRefreshTokenMatching) {
         throw new HttpException('Invalid refresh token', HttpStatus.NOT_FOUND);
@@ -79,7 +79,7 @@ export class UsersService {
     try {
       const removeToken = await this.userRepository.update(
         {
-          hashedRefreshToken: null,
+          hashed_refresh_token: null,
         },
         {
           where: {
@@ -87,6 +87,9 @@ export class UsersService {
           },
         },
       );
+      if (!removeToken) {
+        throw new BadRequestException();
+      }
       return removeToken;
     } catch (e) {
       console.log(e);
@@ -102,7 +105,7 @@ export class UsersService {
       const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 8);
       await this.userRepository.update(
         {
-          hashedRefreshToken: currentHashedRefreshToken,
+          hashed_refresh_token: currentHashedRefreshToken,
         },
         {
           where: {

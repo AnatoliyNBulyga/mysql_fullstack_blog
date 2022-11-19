@@ -3,6 +3,7 @@ import authReducer from "./reducers/auth/authSlice";
 import {authAPI} from "./services/AuthService";
 import {setupListeners} from "@reduxjs/toolkit/query";
 import {postAPI} from "./services/PostService";
+import {baseApi} from "./services/BaseService";
 
 const rootReducer = combineReducers({
     authReducer,
@@ -14,8 +15,7 @@ export const store = configureStore({
     reducer: rootReducer,
     devTools: true,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(
-        authAPI.middleware,
-        postAPI.middleware
+        baseApi.middleware, authAPI.middleware
     )
 });
 

@@ -1,8 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Link, useLocation} from "react-router-dom";
 import {getText} from "../utils/get-text";
-import {useDispatch, useSelector} from "react-redux";
-import { fetchPosts } from "../store/reducers/posts/ActionCreators";
 import {postAPI} from "../store/services/PostService";
 
 const Home = () => {
@@ -72,7 +70,7 @@ const Home = () => {
                          <div className="content">
                              <h1>{post.title}</h1>
                              <p>{getText(post.desc)}</p>
-                             <Link className="link" to={`/post/${post.id}`}>
+                             <Link className="link" to={`/posts/${post.id}`}>
                                 <button>Read More</button>
                              </Link>
                          </div>

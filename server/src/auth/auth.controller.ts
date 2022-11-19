@@ -19,10 +19,14 @@ import { JwtAccessGuard } from './guards/jwt-access.guard';
 import { TokenPayload } from './interfaces/access-token-payload.interface';
 import JwtRefreshGuard from './guards/jwt-refresh.guard';
 import { RequestWithUser } from './interfaces/request-with-user.inteface';
+import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post('register')
   @UsePipes(new ValidationPipe())
@@ -44,8 +48,9 @@ export class AuthController {
       };
       const { accessTokenCookie } =
         this.authService.getCookieWithJwtAccessToken(payload);
-      const { refreshTokenCookie } =
+      const { refreshTokenCookie, refreshToken } =
         this.authService.getCookieWithJwtRefreshToken(payload);
+      await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
       res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
       res.status(200).json({
         secureUser: user,

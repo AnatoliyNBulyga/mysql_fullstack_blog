@@ -50,7 +50,7 @@ export class AuthService {
       const user = await this.userService.getUser(username);
       await this.verifyPassword(password, user.password);
       user.password = undefined;
-      user.hashedRefreshToken = undefined;
+      user.hashed_refresh_token = undefined;
       return user;
     } catch (e) {
       throw new HttpException(
