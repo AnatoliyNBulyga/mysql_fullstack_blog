@@ -72,17 +72,13 @@ export class PostsService {
   public async createPost({
     post,
     userId,
-    img,
   }: {
     post: PostDto;
     userId: number;
-    img: any;
   }): Promise<IPost> {
     try {
-      const imageName = await this.fileService.createFile(img);
       const created = await this.postRepository.create({
         ...post,
-        img: imageName,
         uid: userId,
       });
       if (!created) {

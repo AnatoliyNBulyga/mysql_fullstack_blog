@@ -62,7 +62,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAccessGuard)
-  @Post('logout')
+  @Get('logout')
   async logout(@GetUser() user: User, @Res() res) {
     console.log('user after logout ', user);
     const logoutCookie = await this.authService.logout(user.id);

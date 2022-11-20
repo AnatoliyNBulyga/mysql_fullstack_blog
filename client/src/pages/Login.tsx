@@ -4,7 +4,6 @@ import {ILogin} from "../models/auth/ILogin";
 import {useAppDispatch} from "../hooks/redux";
 import {authAPI} from "../store/services/AuthService";
 import {authSlice} from "../store/reducers/auth/authSlice";
-import {ISecureUser} from "../models/users/ISecureUser";
 
 
 const Login = () => {
@@ -29,10 +28,10 @@ const Login = () => {
     const handleSubmit = async (e: any) => {
         e.preventDefault()
         setLoading(true)
-        const result = await login(inputs) as { data: ISecureUser }
+        const result: any = await login(inputs)
         console.log('result ', result)
-        if ((result).data) {
-            dispatch(authSlice.actions.setCredentials(result.data))
+        if (result.data) {
+            dispatch(authSlice.actions.setCurrentUser(result.data))
             localStorage.setItem("user", JSON.stringify(result.data))
             navigate("/")
         }

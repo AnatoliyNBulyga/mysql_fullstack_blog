@@ -1,6 +1,4 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { Column, DataType, ForeignKey } from 'sequelize-typescript';
-import { User } from '../../users/users.entity';
 
 export class PostDto {
   @IsString()
@@ -17,5 +15,6 @@ export class PostDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly date: string;
+  @IsOptional()
+  readonly img?: string;
 }

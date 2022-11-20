@@ -23,7 +23,7 @@ const Single = () => {
         try {
             const check = window.confirm('Are you sure?');
             if (!check) return true;
-            const res = await removePost(Number(id)) as { data: { success: boolean, message: string }};
+            const res: any = await removePost(Number(id));
             if (res.data.success) {
                 navigate('/')
             }

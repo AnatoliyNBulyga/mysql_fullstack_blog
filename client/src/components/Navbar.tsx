@@ -1,24 +1,23 @@
 import React from 'react';
 import Logo from "../img/logo.png";
 import {Link} from "react-router-dom";
-import {authAPI} from "../store/services/AuthService";
 import {useAppDispatch, useAppSelector} from "../hooks/redux";
-import {authSlice} from "../store/reducers/auth/authSlice";
 import {postAPI} from "../store/services/PostService";
+import {logoutAction} from "../store/reducers/auth/actionCreators";
+import {authSlice} from "../store/reducers/auth/authSlice";
 
 const Navbar = () => {
 
-    const [logout, {error}] = authAPI.useLogoutMutation();
     const {data: posts, error: fetchPostsError, isLoading: fetchPostsLoading} = postAPI.useFetchAllPostsQuery('')
-    const {currentUser, isLoading} = useAppSelector(state => state.authReducer);
+    const {currentUser, isLoading, error} = useAppSelector(state => state.authReducer);
     const dispatch = useAppDispatch()
-    console.log('posts ', posts)
+    console.log('currentUser ', currentUser)
 
     const onclickHandler = async () => {
-        const result = await logout() as { data: boolean };
-        console.log('result ', result)
-        if (result.data) {
-            dispatch(authSlice.actions.logOut())
+        dispatch(logoutAction())
+        if (!error) {
+            console.log('remove')
+            dispatch(authSlice.actions.setCurrentUser(null))
             localStorage.removeItem("user");
         }
     }
@@ -27,14 +26,14 @@ const Navbar = () => {
 
     // Error handling
     let errMsg;
-    if (error) {
+    if (fetchPostsError) {
         let errMsg;
-        if ('status' in error) {
+        if ('status' in fetchPostsError) {
             // you can access all properties of `FetchBaseQueryError` here
-            errMsg = 'error' in error ? error.error : (error.data as { status: string, message: string }).message
+            errMsg = 'error' in fetchPostsError ? fetchPostsError.error : (fetchPostsError.data as { status: string, message: string }).message
         } else {
             // you can access all properties of `SerializedError` here
-            errMsg = error.message
+            errMsg = fetchPostsError.message
         }
     }
 
@@ -57,11 +56,11 @@ const Navbar = () => {
                                 <h6>ALL</h6>
                             </Link>
                             {
-                                posts && posts.map( post => <>
-                                    <Link className="link" to={`/?cat=${post.cat}`}>
+                                posts && posts.map( post =>
+                                    <Link key={post.id} className="link" to={`/?cat=${post.cat}`}>
                                         <h6>{post.cat.toUpperCase()}</h6>
                                     </Link>
-                                </>)
+                                )
                             }
                         </>
                     }
@@ -77,15 +76,17 @@ const Navbar = () => {
                     {/*<Link className="link" to="/?cat=food">*/}
                     {/*    <h6>FOOD</h6>*/}
                     {/*</Link>*/}
-                    <span>{currentUser?.username}</span>
+                    { currentUser && <span>{currentUser.username}</span> }
                     {
                         currentUser
-                            ? <span onClick={onclickHandler}>Logout</span>
+                            ? <>
+                                <span onClick={onclickHandler}>Logout</span>
+                                <span className="write">
+                                    <Link className="link" to="/write">Write</Link>
+                                </span>
+                            </>
                             : <Link className="link" to="/login">Login</Link>
                     }
-                    <span className="write">
-                        <Link className="link" to="/write">Write</Link>
-                    </span>
                 </div>
             </div>
         </div>

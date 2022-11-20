@@ -4,11 +4,13 @@ import {authAPI} from "./services/AuthService";
 import {setupListeners} from "@reduxjs/toolkit/query";
 import {postAPI} from "./services/PostService";
 import {baseApi} from "./services/BaseService";
+import {fileAPI} from "./services/FileService";
 
 const rootReducer = combineReducers({
     authReducer,
     [authAPI.reducerPath]: authAPI.reducer,
     [postAPI.reducerPath]: postAPI.reducer,
+    [fileAPI.reducerPath]: fileAPI.reducer,
 })
 
 export const store = configureStore({

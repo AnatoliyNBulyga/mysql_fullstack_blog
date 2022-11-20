@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
 import { Link, useNavigate} from "react-router-dom"
-import axios from "axios"
 import {authAPI} from "../store/services/AuthService";
 
 const Register = () => {
@@ -18,7 +17,7 @@ const Register = () => {
     console.log('inputs ', inputs)
     const handleSubmit = async (e: any) => {
       e.preventDefault()
-        const result = await register(inputs) as { data: boolean }
+        const result: any = await register(inputs)
         if (result.data) {
             navigate("/login")
         }

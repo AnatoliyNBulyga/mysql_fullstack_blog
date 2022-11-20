@@ -9,5 +9,4 @@ export interface AuthState {
     currentUser: CurrentUser | null;
     isLoading: boolean;
     error: string;
-    isLoggedIn: boolean;
 }

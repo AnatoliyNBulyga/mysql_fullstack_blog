@@ -3,6 +3,7 @@ import {authSlice} from "../reducers/auth/authSlice";
 import {ISecureUser} from "../../models/users/ISecureUser";
 import {authAPI} from "./AuthService";
 import {createApi} from "@reduxjs/toolkit/query/react";
+import {logoutAction} from "../reducers/auth/actionCreators";
 
 
 const baseQuery = fetchBaseQuery(
@@ -30,15 +31,17 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
         const refreshResult = await baseQuery('/auth/refresh', api, extraOptions)
 
         if (refreshResult.data) {
-            api.dispatch(authSlice.actions.setCredentials(refreshResult.data as ISecureUser))
+            api.dispatch(authSlice.actions.setCurrentUser(refreshResult.data as ISecureUser))
             localStorage.setItem('user', JSON.stringify(refreshResult.data))
-
             // retry the initial query
             result = await baseQuery(args, api, extraOptions)
         } else {
             console.log('Error after refresh query')
-            localStorage.removeItem('user')
-            api.dispatch(authSlice.actions.logOut())
+            const res = api.dispatch<any>(logoutAction())
+            if (res.data) {
+                localStorage.removeItem('user')
+                api.dispatch(authSlice.actions.setCurrentUser(null))
+            }
         }
     }
     return result;

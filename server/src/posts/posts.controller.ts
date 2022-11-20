@@ -7,18 +7,16 @@ import {
   Post,
   Put,
   Query,
-  Req,
   Res,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostDto } from './dto/post.dto';
 import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
 import { GetUser } from '../decorators/get-user.decorator';
 import { User } from '../users/users.entity';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('posts')
 export class PostsController {
@@ -35,21 +33,21 @@ export class PostsController {
   }
 
   @UseGuards(JwtAccessGuard)
+  @UsePipes(new ValidationPipe())
   @Post()
-  @UseInterceptors(FileInterceptor('img'))
   public async createPost(
     @GetUser() user: User,
     @Body() post: PostDto,
-    @UploadedFile() img,
     @Res() res,
   ) {
-    await this.postsService.createPost({ post, userId: user.id, img });
+    await this.postsService.createPost({ post, userId: user.id });
     return res
       .status(200)
       .json({ success: true, message: 'The post has been created' });
   }
 
   @UseGuards(JwtAccessGuard)
+  @UsePipes(new ValidationPipe())
   @Put(':postId')
   public async updatePost(
     @GetUser() user: User,

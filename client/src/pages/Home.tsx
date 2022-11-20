@@ -2,6 +2,7 @@ import React from 'react';
 import {Link, useLocation} from "react-router-dom";
 import {getText} from "../utils/get-text";
 import {postAPI} from "../store/services/PostService";
+import {getShortText} from "../utils/get-short-text";
 
 const Home = () => {
     const { search } = useLocation()
@@ -69,7 +70,7 @@ const Home = () => {
                          </div>
                          <div className="content">
                              <h1>{post.title}</h1>
-                             <p>{getText(post.desc)}</p>
+                             <p>{getText(getShortText(post.desc))}</p>
                              <Link className="link" to={`/posts/${post.id}`}>
                                 <button>Read More</button>
                              </Link>

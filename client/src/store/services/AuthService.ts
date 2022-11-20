@@ -10,7 +10,9 @@ import {ILogoutServerResponse} from "../../models/server-response/ILogoutServerR
 export const authAPI = createApi({
     reducerPath: 'authAPI',
     baseQuery: fetchBaseQuery(
-        { baseUrl: 'http://localhost:8800/api/auth' }
+        {
+            baseUrl: 'http://localhost:8800/api/auth',
+        }
     ),
     tagTypes: ['Auth'],
     endpoints: (build) => ({
@@ -21,19 +23,19 @@ export const authAPI = createApi({
                 method: 'POST',
                 body: login,
             }),
-            invalidatesTags: ['Auth'],
+            // invalidatesTags: ['Auth'],
             transformResponse: (response: ISecureUserServerResponse) => response.secureUser,
         }),
-        logout: build.mutation<boolean, void>({
-            query: () => ({
-                url: '/logout',
-                credentials: "include",
-                method: 'POST',
-                body: "",
-            }),
-            invalidatesTags: ['Auth'],
-            transformResponse: (response: ILogoutServerResponse) => response.success,
-        }),
+        // logout: build.mutation<boolean, void>({
+        //     query: () => ({
+        //         url: '/logout',
+        //         credentials: "include",
+        //         method: 'POST',
+        //         body: "",
+        //     }),
+        //     invalidatesTags: ['Auth'],
+        //     transformResponse: (response: ILogoutServerResponse) => response.success,
+        // }),
         register: build.mutation<boolean, IRegister>({
             query: (register: IRegister) => ({
                 url: '/register',
