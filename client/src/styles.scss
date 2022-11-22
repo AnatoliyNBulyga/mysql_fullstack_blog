@@ -21,7 +21,6 @@ $lightGreen: #b9e7e7;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      background-color: $lightGreen;
 
       h1 {
         font-size: 20px;
@@ -34,7 +33,7 @@ $lightGreen: #b9e7e7;
         flex-direction: column;
         padding: 50px;
         background-color: white;
-        width: 200px;
+        //width: 200px;
         gap: 20px;
 
         input {
