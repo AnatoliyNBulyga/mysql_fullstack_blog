@@ -3,7 +3,6 @@ import {ILogin} from "../../models/auth/ILogin";
 import {ISecureUser} from "../../models/users/ISecureUser";
 import {ISecureUserServerResponse} from "../../models/server-response/ISecureUserServerResponse";
 import {IRegister} from "../../models/auth/IRegister";
-import {ILogoutServerResponse} from "../../models/server-response/ILogoutServerResponse";
 
 
 
@@ -16,6 +15,13 @@ export const authAPI = createApi({
     ),
     tagTypes: ['Auth'],
     endpoints: (build) => ({
+        // checkLogin: build.query<ISecureUser, void>({
+        //     query: () => ({
+        //         url: '/check-login',
+        //         credentials: "include",
+        //     }),
+        //     transformResponse: (response: ISecureUserServerResponse) => response.secureUser,
+        // }),
         login: build.mutation<ISecureUser, ILogin>({
             query: (login: ILogin) => ({
                 url: '/login',
@@ -23,19 +29,9 @@ export const authAPI = createApi({
                 method: 'POST',
                 body: login,
             }),
-            // invalidatesTags: ['Auth'],
+            invalidatesTags: ['Auth'],
             transformResponse: (response: ISecureUserServerResponse) => response.secureUser,
         }),
-        // logout: build.mutation<boolean, void>({
-        //     query: () => ({
-        //         url: '/logout',
-        //         credentials: "include",
-        //         method: 'POST',
-        //         body: "",
-        //     }),
-        //     invalidatesTags: ['Auth'],
-        //     transformResponse: (response: ILogoutServerResponse) => response.success,
-        // }),
         register: build.mutation<boolean, IRegister>({
             query: (register: IRegister) => ({
                 url: '/register',

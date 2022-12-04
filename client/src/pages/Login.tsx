@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
 import {Link, useNavigate} from "react-router-dom"
-import {ILogin} from "../models/auth/ILogin";
 import {useAppDispatch} from "../hooks/redux";
 import {authAPI} from "../store/services/AuthService";
 import {authSlice} from "../store/reducers/auth/authSlice";
-import { useDebouncedState } from '@mantine/hooks';
+import {useDebouncedState, useValidatedState} from '@mantine/hooks';
+// mantine.dev
 import {
     TextInput,
     PasswordInput,
@@ -21,6 +21,8 @@ import {
     Center
 } from "@mantine/core";
 import Logo from "../img/logo.png";
+import {MyLoader} from "../components/MyLoader";
+import { useAuthStyles } from "../hooks/style/auth";
 
 
 const Login = () => {
@@ -29,6 +31,8 @@ const Login = () => {
         username: "",
         password: ""
     }, 400)
+
+    const { classes } = useAuthStyles();
 
     // Use RTK queries
     const [login, {isLoading, error}] = authAPI.useLoginMutation()
@@ -65,11 +69,11 @@ const Login = () => {
     }
 
     if (isLoading) {
-        return <div>Loading...</div>
+        return <MyLoader />
     }
 
     return (
-        <Container size={520} className="auth" sx={{ width: "100%" }} my={10}>
+        <Container className={classes.auth} size={520} sx={{ width: "100%" }} my={10}>
 
             <Center  mb="xs">
                 <Link to="/">
@@ -95,7 +99,7 @@ const Login = () => {
 
                     {error && (
                         <Text color="red" align="center">
-                            {error}
+                            {errMsg}
                         </Text>
                     )}
 

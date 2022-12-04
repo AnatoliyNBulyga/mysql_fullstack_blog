@@ -1,13 +1,36 @@
-import React from 'react';
-import {Link, useLocation} from "react-router-dom";
-import {getText} from "../utils/get-text";
+import React, {useEffect} from 'react';
+import {useLocation} from "react-router-dom";
 import {postAPI} from "../store/services/PostService";
-import {getShortText} from "../utils/get-short-text";
+import Hero from "../components/Hero";
+import {
+    Container,
+} from '@mantine/core';
+import {useAppDispatch, useAppSelector} from "../hooks/redux";
+import {checkLoginAction} from "../store/reducers/auth/actionCreators";
+import {MyLoader} from "../components/MyLoader";
+import PageSection from "../components/PageSection";
 
 const Home = () => {
     const { search } = useLocation()
 
     const {data: posts, isLoading, error} = postAPI.useFetchAllPostsQuery(search)
+    const {currentUser, isLoading: isCurrentUserLoading, error: errorCurrentUser} = useAppSelector(state => state.authReducer);
+    const dispatch = useAppDispatch()
+    const localUser = localStorage.getItem("user")
+    console.log('currentUser ', currentUser)
+
+    useEffect(() => {
+        if (localUser) {
+            dispatch(checkLoginAction())
+        }
+    }, [])
+
+    if (currentUser) {
+        localStorage.setItem("user", JSON.stringify(currentUser))
+    }
+    if (errorCurrentUser) {
+        localStorage.removeItem("user")
+    }
 
     // const posts = [
     //   {
@@ -37,9 +60,8 @@ const Home = () => {
     // ];
 
     if (isLoading) {
-        return <div>Loading...</div>
+        return <MyLoader />
     }
-
     // Error handling
     let errMsg;
     if (error) {
@@ -58,28 +80,20 @@ const Home = () => {
 
     return (
         <div className="home">
-         <div className="posts">
-             {
-                 posts && posts.length
-                 ? posts.map(post => (
-                     <div className="post" key={post.id}>
-                         <div className="img">
-                             {
-                                 post.img && <img src={`http://localhost:8800/${post.img}`} alt="Post preview"/>
-                             }
-                         </div>
-                         <div className="content">
-                             <h1>{post.title}</h1>
-                             <p>{getText(getShortText(post.desc))}</p>
-                             <Link className="link" to={`/posts/${post.id}`}>
-                                <button>Read More</button>
-                             </Link>
-                         </div>
-                     </div>
-                 ))
-                 : <div>We have no posts!</div>
-             }
-         </div>
+            <Hero />
+            <Container>
+                <div className="posts">
+                 {
+                     posts && posts.length
+                     ? posts.map((post, index) => (
+
+                         <PageSection key={post.id} post={post} index={index} />
+
+                     ))
+                     : <div>We have no posts!</div>
+                 }
+                </div>
+            </Container>
         </div>
     );
 };

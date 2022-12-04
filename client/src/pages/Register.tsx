@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import { Link, useNavigate} from "react-router-dom"
 import {authAPI} from "../store/services/AuthService";
-import { useDebouncedState } from '@mantine/hooks';
+import {useDebouncedState, useValidatedState} from '@mantine/hooks';
 import {
     TextInput,
     PasswordInput,
@@ -23,6 +23,8 @@ import {
 } from "@mantine/core";
 import { IconX, IconCheck } from '@tabler/icons'
 import Logo from "../img/logo.png";
+import {MyLoader} from "../components/MyLoader";
+import { useAuthStyles } from "../hooks/style/auth";
 
 const Register = () => {
     const [inputs, setInputs] = useDebouncedState<any>({
@@ -31,10 +33,14 @@ const Register = () => {
         password: ""
     }, 400)
     const [register, {isLoading, error}] = authAPI.useRegisterMutation()
-    const [emailError, setEmailError] = useState<string>("")
 
+    const { classes } = useAuthStyles();
     const navigate = useNavigate()
     const handleChange = (e: any) => {
+
+        if (e.target.name === 'email') {
+            setEmail(e.currentTarget.value)
+        }
         setInputs((prev:any) => ({...prev, [e.target.name]: e.target.value}))
     }
     console.log('inputs ', inputs)
@@ -45,15 +51,6 @@ const Register = () => {
             navigate("/login")
         }
     };
-
-    // style
-    const useStyles = createStyles((theme) => ({
-        invalid: {
-            backgroundColor:
-                theme.colorScheme === 'dark' ? theme.fn.rgba(theme.colors.red[8], 0.15) : theme.colors.red[0],
-        },
-    }))
-    const { classes } = useStyles();
 
     // Check password
     function PasswordRequirement({ meets, label }: { meets: boolean; label: string }) {
@@ -92,6 +89,13 @@ const Register = () => {
     const strength = getStrength(inputs.password);
     const color = strength === 100 ? 'teal' : strength > 50 ? 'yellow' : 'red';
 
+    // Check email
+    const [{ valid: emailValid }, setEmail] = useValidatedState(
+        '',
+        (val) => /^\S+@\S+$/.test(val),
+        true
+    );
+
     // Error handling
     let errMsg;
     if (error) {
@@ -105,11 +109,11 @@ const Register = () => {
     }
 
     if (isLoading) {
-        return <div>Loading...</div>
+        return <MyLoader />
     }
 
     return (
-        <Container size={520} className="auth" sx={{ width: "100%" }} my={10}>
+        <Container size={520} className={classes.auth} sx={{ width: "100%" }} my={10}>
 
             <Center  mb="xs">
                 <Link to="/">
@@ -156,8 +160,8 @@ const Register = () => {
                             name="email"
                             mt="xs"
                             onChange={handleChange}
-                            error={emailError}
-                            classNames={{ input: emailError ? classes.invalid : ""}}
+                            error={!emailValid && 'Invalid email'}
+                            classNames={{ input: emailValid ? "" : classes.invalid }}
                         />
 
                         <Popover opened={popoverOpened} position="bottom" width="target" transition="pop">
@@ -170,7 +174,7 @@ const Register = () => {
                                         label="Password"
                                         placeholder="password"
                                         name="password"
-                                        required
+                                        // required
                                         mt="xs"
                                         onChange={handleChange}
                                     />

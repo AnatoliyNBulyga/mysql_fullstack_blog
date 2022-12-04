@@ -29,6 +29,9 @@ export class JwtAccessTokenStrategy extends PassportStrategy(
 
   async validate(req: Request, payload: TokenPayload) {
     console.log('payload from access jwt strategy ', payload);
-    return this.userService.getUser(payload.username);
+    const user = await this.userService.getUser(payload.username);
+    user.password = undefined;
+    user.hashed_refresh_token = undefined;
+    return user;
   }
 }

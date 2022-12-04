@@ -83,4 +83,12 @@ export class AuthController {
     request.res.setHeader('Set-Cookie', accessTokenCookie);
     return user;
   }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('check-login')
+  async checkLogin(@GetUser() user: User, @Res() res) {
+    res.status(200).json({
+      secureUser: user,
+    });
+  }
 }

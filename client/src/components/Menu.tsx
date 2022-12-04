@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {postAPI} from "../store/services/PostService";
+import {Link} from "react-router-dom";
+import {Button, Group} from "@mantine/core";
 
 const Menu = ({cat}: {cat: string}) => {
     // const [posts, setPosts] = useState([]);
@@ -52,7 +54,13 @@ const Menu = ({cat}: {cat: string}) => {
                         post.img && <img src={`${process.env.REACT_APP_BACKEND_URL}/${post?.img}`} alt="Post preview" />
                     }
                     <h2>{post.title}</h2>
-                    <button>Read More</button>
+                    <Group mt={30}>
+                        <Link className="link" to={`/posts/${post.id}`}>
+                            <Button variant="outline" size="md">
+                                Read more
+                            </Button>
+                        </Link>
+                    </Group>
                 </div>
             ))}
         </div>
