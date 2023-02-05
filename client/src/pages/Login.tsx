@@ -1,9 +1,9 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {Link, useNavigate} from "react-router-dom"
 import {useAppDispatch} from "../hooks/redux";
 import {authAPI} from "../store/services/AuthService";
 import {authSlice} from "../store/reducers/auth/authSlice";
-import {useDebouncedState, useValidatedState} from '@mantine/hooks';
+import {useDebouncedState} from '@mantine/hooks';
 // mantine.dev
 import {
     TextInput,
@@ -20,9 +20,10 @@ import {
     MediaQuery,
     Center
 } from "@mantine/core";
-import Logo from "../img/logo.png";
+import Logo from "../assets/img/logo.png";
 import {MyLoader} from "../components/MyLoader";
 import { useAuthStyles } from "../hooks/style/auth";
+import ErrorMessage from "../components/ErrorMessage";
 
 
 const Login = () => {
@@ -66,6 +67,10 @@ const Login = () => {
             // you can access all properties of `SerializedError` here
             errMsg = error.message
         }
+    }
+
+    if (error) {
+        return <ErrorMessage>{errMsg}</ErrorMessage>
     }
 
     if (isLoading) {
@@ -122,9 +127,7 @@ const Login = () => {
                         <Group position="apart" mt="md">
                             <Checkbox label="Remember me" />
                         </Group>
-                        <Button fullWidth my="xs" type="submit" color="tgold" sx={(theme) => ({
-                            color: "white"
-                        })}>
+                        <Button fullWidth my="xs" type="submit" >
                             Sign in
                         </Button>
                         <Text color="dimmed" size="sm" align="center" mt={5}>

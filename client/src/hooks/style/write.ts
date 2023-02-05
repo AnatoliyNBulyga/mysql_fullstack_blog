@@ -25,7 +25,7 @@ export const useWriteStyles = createStyles((theme) => ({
         minHeight: '45vh',
         overflow: 'scroll',
         border: '1px solid lightgray',
-
+        borderRadius: '4px',
     },
 
     editor: {
@@ -42,6 +42,7 @@ export const useWriteStyles = createStyles((theme) => ({
 
     item: {
         border: '1px solid lightgray',
+        borderRadius: '4px',
         padding: '10px',
         flex: 1,
         display: 'flex',
@@ -56,29 +57,19 @@ export const useWriteStyles = createStyles((theme) => ({
     },
 
     file: {
-        textDecoration: 'underline',
         cursor: 'pointer',
+        margin: '10px 0',
+
+        '& label': {
+            fontSize: '12px',
+            color: '#555',
+            fontWeight: 'bold',
+        }
     },
 
     buttons: {
         display: 'flex',
         justifyContent: 'space-between',
-
-        '& button:first-child': {
-            cursor: 'pointer',
-            color: 'teal',
-            backgroundColor: 'white',
-            border: '1px solid teal',
-            padding: '3px 5px',
-        },
-
-        '& button:last-child': {
-            cursor: 'pointer',
-            color: 'white',
-            backgroundColor: 'teal',
-            border: '1px solid teal',
-            padding: '3px 5px'
-        }
     },
 
     cat: {
@@ -86,5 +77,13 @@ export const useWriteStyles = createStyles((theme) => ({
         alignItems: 'center',
         gap: '2px',
         color: 'teal'
-    }
+    },
+
+    profile: {
+        height: 'calc(100vh - 400px)',
+        marginTop: '80px',
+        display: 'flex',
+        gap: '20px',
+    },
+
 }));

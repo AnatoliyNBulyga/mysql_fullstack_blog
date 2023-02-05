@@ -1,6 +1,6 @@
 import React from 'react';
-import editIconSrc from '../img/edit.png';
-import deleteIconSrc from '../img/delete.png';
+import editIconSrc from '../assets/img/edit.png';
+import deleteIconSrc from '../assets/img/delete.png';
 import {Link, useNavigate, useParams} from "react-router-dom";
 import Menu from "../components/Menu";
 import moment from "moment";
@@ -12,6 +12,8 @@ import {
 } from '@mantine/core';
 import {MyLoader} from "../components/MyLoader";
 import {useSingleStyles} from "../hooks/style/single";
+import ErrorMessage from "../components/ErrorMessage";
+import {IconEdit, IconTrash} from "@tabler/icons";
 
 
 const Single = () => {
@@ -21,7 +23,7 @@ const Single = () => {
     const { data: post, isLoading, error } = postAPI.useFetchPostQuery(Number(id));
     const [removePost] = postAPI.useRemovePostMutation();
     const {currentUser} = useAppSelector(state => state.authReducer);
-    const { classes } = useSingleStyles();
+    const { classes, theme } = useSingleStyles();
 
     console.log('post ', post)
 
@@ -39,8 +41,19 @@ const Single = () => {
         }
     }
 
+    let errMsg;
     if (error) {
-        return <>Error {error}</>
+        if ('status' in error) {
+            // you can access all properties of `FetchBaseQueryError` here
+            errMsg = 'error' in error ? error.error : (error.data as { status: string, message: string }).message
+        } else {
+            // you can access all properties of `SerializedError` here
+            errMsg = error.message
+        }
+    }
+
+    if (error) {
+        return <ErrorMessage>{errMsg}</ErrorMessage>
     }
 
     if (isLoading) {
@@ -48,7 +61,7 @@ const Single = () => {
     }
 
     return (
-        <Container>
+        <Container size="lg">
             <div className={classes.single}>
                 {
                     post
@@ -60,7 +73,7 @@ const Single = () => {
                                 }
                                 <div className={classes.user}>
                                     {
-                                        post.author?.img && <img src={post.author.img} alt="User avatar"/>
+                                        post.author?.img && <img src={`${process.env.REACT_APP_BACKEND_URL}/${post.author.img}`} alt="User avatar"/>
                                     }
                                     <div>
                                         <span>{post.author.username}</span>
@@ -70,9 +83,9 @@ const Single = () => {
                                         currentUser?.username === post.author.username &&
                                         <div className={classes.edit}>
                                             <Link to={`/write?edit=2`} state={post}>
-                                                <img src={editIconSrc} alt="Edit" />
+                                                <IconEdit size={20} stroke={1.5} color={theme.colors.blue[8]} />
                                             </Link>
-                                            <img onClick={handleDelete} src={deleteIconSrc} alt="Delete"/>
+                                            <IconTrash onClick={handleDelete} size={20} stroke={1.5} color={theme.colors.red[8]} style={{ cursor: 'pointer'}} />
                                         </div>
                                     }
                                 </div>

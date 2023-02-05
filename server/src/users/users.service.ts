@@ -8,13 +8,15 @@ import { User } from './users.entity';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
-import { use } from 'passport';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User)
     private userRepository: typeof User,
+    private readonly fileService: FilesService,
   ) {}
 
   public async getUsers() {
@@ -120,6 +122,32 @@ export class UsersService {
         'Set Refresh Token ERROR',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+
+  public async updateUser(updateData: UpdateUserDto, user: User) {
+    console.log('updateData service ', updateData);
+    try {
+      if (updateData.img) {
+        await this.fileService.deleteOldFile(user.img);
+      }
+      const updated = await this.userRepository.update(
+        {
+          ...updateData,
+        },
+        {
+          where: {
+            id: user.id,
+          },
+        },
+      );
+      if (!updated) {
+        throw new BadRequestException();
+      }
+      return updated;
+    } catch (e) {
+      console.log('e in updateUser');
+      throw new BadRequestException();
     }
   }
 }

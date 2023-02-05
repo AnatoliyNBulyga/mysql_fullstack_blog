@@ -11,7 +11,7 @@ export const useAuthStyles = createStyles((theme) => ({
 
         '& h1': {
             fontSize: '20px',
-            color: 'teal',
+            color: theme.colors.blue[7],
             marginBottom: '20px',
         }
     },

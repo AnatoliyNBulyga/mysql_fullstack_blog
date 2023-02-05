@@ -1,5 +1,5 @@
 import React from 'react';
-import Logo from "../img/logo.png";
+import Logo from "../assets/img/logo.png";
 import {Link} from "react-router-dom";
 import { useState } from 'react';
 import {
@@ -20,7 +20,7 @@ import { useDisclosure } from '@mantine/hooks';
 import {
     IconLogout,
     IconMessage,
-    IconChevronDown,
+    IconChevronDown, IconUser,
 } from '@tabler/icons';
 import {useAppDispatch, useAppSelector} from "../hooks/redux";
 import {postAPI} from "../store/services/PostService";
@@ -42,10 +42,13 @@ export function Navbar() {
     const dispatch = useAppDispatch()
     console.log('currentUser ', currentUser)
 
-    const items = posts && posts.map((post) => (
-        <Link key={post.id} className="link" to={`/?cat=${post.cat}`}>
-            <Tabs.Tab value={post.cat} key={post.id}>
-                    <h6>{post.cat.toUpperCase()}</h6>
+    const catArray = posts && posts.map(post => post.cat)
+    const uniqueCatItems = Array.from(new Set(catArray))
+
+    const items = uniqueCatItems.map((item: string) => (
+        <Link key={item} className={classes.link} to={`/?cat=${item}`}>
+            <Tabs.Tab value={item}>
+                <h6>{item.toUpperCase()}</h6>
             </Tabs.Tab>
         </Link>
     ));
@@ -76,13 +79,32 @@ export function Navbar() {
 
     return (
         <div className={classes.header}>
-            <Container className={classes.mainSection}>
+            <Container size="lg" className={classes.mainSection}>
                 <Group position="apart">
                     <Link to="/">
-                       <span className="logo">
-                           <img src={Logo} style={{width: '80px', height: 'auto'}} alt="Logo" />
+                       <span className={classes.logo}>
+                           <img src={Logo} alt="Logo" />
                          </span>
                     </Link>
+
+                    <Tabs
+                        variant="outline"
+                        classNames={{
+                            root: classes.tabs,
+                            tabsList: classes.tabsList,
+                            tab: classes.tab,
+                        }}
+                    >
+                        <Tabs.List>
+                            <Link className={classes.link} to="/">
+                                <Tabs.Tab value="all">
+                                    <h6>ALL</h6>
+                                </Tabs.Tab>
+                            </Link>
+                            {items}
+                        </Tabs.List>
+
+                    </Tabs>
 
                     <Burger opened={opened} onClick={toggle} className={classes.burger} size="sm" />
 
@@ -102,6 +124,7 @@ export function Navbar() {
                                     currentUser
                                     ?
                                         <Flex py="xs" direction="column">
+                                            <Link className={classes.menuLink} to="/profile">Profile</Link>
                                             <Link className={classes.menuLink} to="/write">Write</Link>
                                             <Link className={classes.menuLink} to="/" onClick={onLogoutHandler}>Logout</Link>
                                         </Flex>
@@ -130,7 +153,10 @@ export function Navbar() {
                                         className={cx(classes.user, { [classes.userActive]: userMenuOpened })}
                                     >
                                         <Group spacing={7}>
-                                            <Avatar src={currentUser.img} alt={currentUser.username} radius="xl" size={20} />
+                                            {
+                                                currentUser.img &&
+                                                <Avatar src={`${process.env.REACT_APP_BACKEND_URL}/${currentUser.img}`} alt={currentUser.username} radius="xl" size={20} />
+                                            }
                                             <Text weight={500} size="sm" sx={{ lineHeight: 1, color: theme.black }} mr={3}>
                                                 {currentUser.username}
                                             </Text>
@@ -139,12 +165,15 @@ export function Navbar() {
                                     </UnstyledButton>
                                 </Menu.Target>
                                 <Menu.Dropdown>
-                                    <Menu.Item icon={<IconMessage size={14} stroke={1.5} color={theme.colors.blue[6]} />}>
+                                    <Menu.Item icon={<IconUser size={14} stroke={1} color={theme.colors.blue[8]} />}>
+                                        <Link className={classes.link} to="/profile">Profile</Link>
+                                    </Menu.Item>
+                                    <Menu.Item icon={<IconMessage size={14} stroke={1} color={theme.colors.blue[8]} />}>
                                         <Link className={classes.link} to="/write">Write</Link>
                                     </Menu.Item>
                                     <Menu.Divider />
                                     <Menu.Item
-                                        icon={<IconLogout size={14} stroke={1.5} />}
+                                        icon={<IconLogout size={14} stroke={1} color={theme.colors.blue[8]} />}
                                         onClick={onLogoutHandler}
                                     >Logout</Menu.Item>
 
@@ -157,26 +186,6 @@ export function Navbar() {
                             </Group>
                     }
                 </Group>
-            </Container>
-            <Container>
-                <Tabs
-                    variant="outline"
-                    classNames={{
-                        root: classes.tabs,
-                        tabsList: classes.tabsList,
-                        tab: classes.tab,
-                    }}
-                >
-                    <Tabs.List>
-                        <Link className="link" to="/">
-                            <Tabs.Tab value="all">
-                                <h6>ALL</h6>
-                            </Tabs.Tab>
-                        </Link>
-                        {items}
-                    </Tabs.List>
-
-                </Tabs>
             </Container>
         </div>
     );

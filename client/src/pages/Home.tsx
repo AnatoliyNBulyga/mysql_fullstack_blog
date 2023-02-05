@@ -3,12 +3,13 @@ import {useLocation} from "react-router-dom";
 import {postAPI} from "../store/services/PostService";
 import Hero from "../components/Hero";
 import {
-    Container,
+    Container, Flex,
 } from '@mantine/core';
 import {useAppDispatch, useAppSelector} from "../hooks/redux";
 import {checkLoginAction} from "../store/reducers/auth/actionCreators";
 import {MyLoader} from "../components/MyLoader";
 import PageSection from "../components/PageSection";
+import ErrorMessage from "../components/ErrorMessage"
 
 const Home = () => {
     const { search } = useLocation()
@@ -75,13 +76,13 @@ const Home = () => {
     }
 
     if (error) {
-        return <div>{errMsg}</div>
+        return <ErrorMessage>{errMsg}</ErrorMessage>
     }
 
     return (
         <div className="home">
             <Hero />
-            <Container>
+            <Container size="lg">
                 <div className="posts">
                  {
                      posts && posts.length
@@ -90,7 +91,7 @@ const Home = () => {
                          <PageSection key={post.id} post={post} index={index} />
 
                      ))
-                     : <div>We have no posts!</div>
+                     : <Flex justify="center" sx={{ marginTop: '120px'}}>We have no posts!</Flex>
                  }
                 </div>
             </Container>

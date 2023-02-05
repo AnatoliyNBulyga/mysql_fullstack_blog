@@ -4,7 +4,7 @@ export const useFooterStyles = createStyles((theme) => ({
     footer: {
         marginTop: 120,
         borderTop: `1px solid ${
-            theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[2]
+            theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.blue[0]
         }`,
     },
 

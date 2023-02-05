@@ -1,5 +1,5 @@
 import React from 'react';
-import Logo from "../img/logo.png";
+import Logo from "../assets/img/logo.png";
 import { Container, Group, ActionIcon } from '@mantine/core';
 import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons';
 import {useFooterStyles} from "../hooks/style/footer";
@@ -9,7 +9,7 @@ const Footer = () => {
     return (
 
         <div className={classes.footer}>
-            <Container className={classes.inner}>
+            <Container size="lg" className={classes.inner}>
                 <img src={Logo} style={{width: '80px', height: 'auto'}} alt="Logo"/>
                 <Group spacing={0} className={classes.links} position="right" noWrap>
                     <ActionIcon size="lg">

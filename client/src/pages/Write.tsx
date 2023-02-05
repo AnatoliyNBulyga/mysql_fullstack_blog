@@ -1,27 +1,35 @@
 import React, {useState} from 'react';
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useLocation, useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {postAPI} from "../store/services/PostService";
 import {fileAPI} from "../store/services/FileService";
 import {
+    Button,
     Container,
+    TextInput,
+    Radio,
+    FileInput,
+    Notification
 } from '@mantine/core';
 import {MyLoader} from "../components/MyLoader";
 import {useWriteStyles} from "../hooks/style/write";
+import {useDebouncedState} from "@mantine/hooks";
+import { IconCheck, IconX } from '@tabler/icons';
 
 
 const Write = () => {
     const { state } = useLocation()
-    const [desc, setDesc] = useState(state?.desc ?? '')
-    const [title, setTitle] = useState(state?.title ?? '')
-    const [file, setFile] = useState<string|Blob>('')
+    const [desc, setDesc] = useDebouncedState(state?.desc ?? '', 200)
+    const [title, setTitle] = useDebouncedState(state?.title ?? '', 200)
+    const [file, setFile] = useState<File | null>(null);
     const [cat, setCat] = useState(state?.cat ?? '')
-    const navigate = useNavigate()
     const { classes } = useWriteStyles()
+    const navigate = useNavigate()
+    const [successMessage, setSuccessMessage] = useState<string>('')
 
     const [updatePost, {error: updatePostError, isLoading: updatePostLoading}] = postAPI.useUpdatePostMutation()
-    const [createPost, {error: createPostError, isLoading: createPostLoading}] = postAPI.useCreatePostMutation()
+    const [createPost, {error: createPostError, isLoading: createPostLoading, reset}] = postAPI.useCreatePostMutation()
     const [addFile] = fileAPI.useAddFileMutation()
 
     const categoryArray = ['art', 'science', 'technology', 'cinema', 'development', 'food']
@@ -29,7 +37,7 @@ const Write = () => {
     const upload = async () => {
         try {
            const formData = new FormData()
-           formData.append("image", file)
+           formData.append("image", file as Blob)
             const result: any = await addFile(formData)
             console.log('result ', result)
             return result.data
@@ -40,83 +48,131 @@ const Write = () => {
 
     const handlePublish = async (e: any) => {
         e.preventDefault()
+        const check = window.confirm('Are you sure?');
+        if (!check) return true;
         const imgSrc = file ? await upload() : ""
         const updatePostObj = file
             ? { title, desc, cat, img: imgSrc }
             : { title, desc, cat}
 
+        console.log('updatePostObj ', updatePostObj)
         try {
-            state
+            const result: any = state
             ? await updatePost({
                     id: state.id,
                     updatePost: updatePostObj
             })
             : await createPost(updatePostObj)
-            navigate("/")
+            console.log('result ', result)
+            if (result.data) {
+                setSuccessMessage(result.data.message)
+                window.setTimeout(() => {
+                    navigate("/")
+                }, 2000)
+            }
         } catch(e) {
             console.log('ERROR in handlePublish ', e)
         }
     }
 
     if (updatePostLoading || createPostLoading) {
-        return <MyLoader />
-    }
-
-    if (createPostError || updatePostError) {
-        return <div>Create or Update error!</div>
+        return <Container><MyLoader /></Container>
     }
 
     return (
         <Container>
-            <div className={classes.add}>
-                <div className={classes.content}>
-                    <input type="text" value={title} placeholder="Title" onChange={e => setTitle(e.target.value)}/>
-                    <div className={classes.editorContainer}>
-                        <ReactQuill
-                            className="editor"
-                            theme="snow"
-                            value={desc}
-                            onChange={setDesc}
+            <>
+                {
+                    successMessage &&
+                    <Notification
+                        sx={{ marginTop: '30px'}}
+                        icon={<IconCheck size={18} />}
+                        color="teal"
+                        title="Success notification"
+                        onClick={() => setSuccessMessage('')}
+                    >
+                        {successMessage}
+                    </Notification>
+                }
+                {
+                    (createPostError || updatePostError) &&
+                    <Notification
+                        sx={{ marginTop: '30px'}}
+                        icon={<IconX size={18} />}
+                        color="red"
+                        onClick={reset}
+                    >
+                        Create or Update error!
+                    </Notification>
+                }
+                <div className={classes.add}>
+                    <div className={classes.content}>
+                        <TextInput
+                            type="text"
+                            defaultValue={title}
+                            placeholder="Title"
+                            onChange={e => setTitle(e.currentTarget.value)}
+                            required
                         />
-                    </div>
-                </div>
-                <div className={classes.menu}>
-                    <div className={classes.item}>
-                        <h1>Publish</h1>
-                        <span>
-                        <b>Status: </b> Draft
-                    </span>
-                        <span>
-                        <b>Visibility: </b> Public
-                    </span>
-                        <input style={{display: "none"}} type="file" id="file" name="" onChange={(e: any) => setFile(e.target.files[0])}/>
-                        <label htmlFor="file">Upload Image</label>
-                        <div className={classes.buttons}>
-                            <button>Save as a draft</button>
-                            <button onClick={handlePublish}>Publish</button>
+                        <div className={classes.editorContainer}>
+                            <ReactQuill
+                                className="editor"
+                                theme="snow"
+                                value={desc}
+                                onChange={setDesc}
+                            />
                         </div>
                     </div>
-                    <div className={classes.item}>
-                        <h1>Category</h1>
-                        {
-                            categoryArray.map(category =>
-                                <div className={classes.cat} key={category}>
-                                    <input
-                                        type="radio"
-                                        checked={cat === category}
-                                        name="cat"
-                                        value={category}
-                                        id={category}
-                                        onChange={(e) => setCat(e.target.value)}
-                                    />
-                                    <label htmlFor={category}>{category}</label>
-                                </div>
-                            )
-                        }
+                    <div className={classes.menu}>
+                        <div className={classes.item}>
+                            <h1>Publish</h1>
+                            <span>
+                                <b>Status: </b> Draft
+                            </span>
+                            <span>
+                                <b>Visibility: </b> Public
+                            </span>
+                            <div className={classes.file}>
+                                <FileInput
+                                    id="file"
+                                    label="Upload Image"
+                                    placeholder="Upload Image"
+                                    value={file}
+                                    onChange={setFile}
+                                    accept="image/png,image/jpeg"
+                                />
+                            </div>
+                            <div className={classes.buttons}>
+                                <Button variant="outline">Save as a draft</Button>
+                                <Button onClick={handlePublish}>Publish</Button>
+                            </div>
+                        </div>
+                        <div className={classes.item}>
+                            <h1>Category</h1>
+                            {
+                                categoryArray.map(category =>
+                                    <div className={classes.cat} key={category}>
+                                        <Radio.Group
+                                            size="xs"
+                                            value={cat}
+                                            onChange={setCat}
+                                        >
+                                            <Radio
+                                                id={category}
+                                                value={category}
+                                                label={category}
+                                                name="cat"
+                                                checked={cat === category}
+                                            />
+                                        </Radio.Group>
+                                    </div>
+                                )
+                            }
 
+                        </div>
                     </div>
                 </div>
-            </div>
+            </>
         </Container>
     );
 };

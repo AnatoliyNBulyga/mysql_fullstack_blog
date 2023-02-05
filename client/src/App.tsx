@@ -7,7 +7,7 @@ import Write from "./pages/Write";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Single from "./pages/Single";
-import './styles.scss';
+import Profile from "./pages/Profile";
 import MainLayout from "./layouts/main";
 
 const router = createBrowserRouter([
@@ -26,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "/write",
         element: <Write />
+      },
+      {
+        path: "/profile",
+        element: <Profile />
       }
     ]
   },

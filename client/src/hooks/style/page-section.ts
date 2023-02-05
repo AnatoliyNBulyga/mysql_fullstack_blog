@@ -3,7 +3,11 @@ import {createStyles} from "@mantine/core";
 export const usePageSectionsStyles = createStyles((theme) => ({
     post: {
          '&:nth-of-type(2n)': {
-             flexDirection: 'row-reverse'
+             flexDirection: 'row-reverse',
+
+             '> .content': {
+                marginRight: 0,
+             }
          }
     },
     inner: {
@@ -11,10 +15,11 @@ export const usePageSectionsStyles = createStyles((theme) => ({
         justifyContent: 'space-between',
         paddingTop: theme.spacing.xl * 4,
         paddingBottom: theme.spacing.xl * 4,
+        gap: '60px',
     },
 
     content: {
-        maxWidth: 480,
+        maxWidth: 498,
         marginRight: theme.spacing.xl * 3,
 
         [theme.fn.smallerThan('md')]: {
@@ -48,7 +53,7 @@ export const usePageSectionsStyles = createStyles((theme) => ({
             content: '""',
             width: '100%',
             height: '100%',
-            backgroundColor: theme.colors.oceanBlue[0],
+            backgroundColor: theme.colors.blue[1],
             // backgroundColor: '#333',
             position: 'absolute',
             top: '20px',

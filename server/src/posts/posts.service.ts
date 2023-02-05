@@ -1,4 +1,9 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Post } from './posts.entity';
 import { PostDto } from './dto/post.dto';
@@ -13,7 +18,7 @@ export class PostsService {
   constructor(
     @InjectModel(Post)
     private postRepository: typeof Post,
-    private fileService: FilesService,
+    private readonly fileService: FilesService,
   ) {}
 
   public async getPosts(
@@ -104,6 +109,15 @@ export class PostsService {
     userId: number;
   }): Promise<number[]> {
     try {
+      const storedPost = await this.postRepository.findOne({
+        where: { id: postId },
+      });
+      if (!storedPost) {
+        throw new NotFoundException();
+      }
+      if (post.img) {
+        await this.fileService.deleteOldFile(storedPost.img);
+      }
       const updated = await this.postRepository.update(
         {
           ...post,
@@ -130,6 +144,12 @@ export class PostsService {
 
   public async deletePost(postId: number, userId: number) {
     try {
+      const storedPost = await this.postRepository.findOne({
+        where: { id: postId },
+      });
+      if (!storedPost) {
+        throw new NotFoundException();
+      }
       const deleted = await this.postRepository.destroy({
         where: {
           id: postId,
@@ -140,6 +160,7 @@ export class PostsService {
       if (!deleted) {
         throw new BadRequestException();
       }
+      await this.fileService.deleteOldFile(storedPost.img);
       return deleted;
     } catch (e) {
       console.log('e in deletePost ', e);

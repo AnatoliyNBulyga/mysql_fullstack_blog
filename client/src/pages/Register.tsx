@@ -5,26 +5,24 @@ import {useDebouncedState, useValidatedState} from '@mantine/hooks';
 import {
     TextInput,
     PasswordInput,
-    Checkbox,
     Anchor,
     Paper,
     Text,
-    Group,
     Button,
     LoadingOverlay,
     Title,
     Container,
     MediaQuery,
     Center,
-    createStyles,
     Progress,
     Popover,
     Box,
 } from "@mantine/core";
 import { IconX, IconCheck } from '@tabler/icons'
-import Logo from "../img/logo.png";
+import Logo from "../assets/img/logo.png";
 import {MyLoader} from "../components/MyLoader";
 import { useAuthStyles } from "../hooks/style/auth";
+import ErrorMessage from "../components/ErrorMessage";
 
 const Register = () => {
     const [inputs, setInputs] = useDebouncedState<any>({
@@ -106,6 +104,10 @@ const Register = () => {
             // you can access all properties of `SerializedError` here
             errMsg = error.message
         }
+    }
+
+    if (error) {
+        return <ErrorMessage>{errMsg}</ErrorMessage>
     }
 
     if (isLoading) {

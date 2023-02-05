@@ -2,13 +2,32 @@ import {createStyles} from "@mantine/core";
 
 export const useHeroStyles = createStyles((theme) => ({
     hero: {
-        backgroundColor: '#11284b',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundImage:
-            'linear-gradient(250deg, rgba(130, 201, 30, 0) 0%, #062343 70%), url(https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1080&q=80)',
-        paddingTop: theme.spacing.xl * 3,
-        paddingBottom: theme.spacing.xl * 3,
+        position: 'relative',
+
+        '&:before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            right: 0,
+            left: 0,
+            zIndex: 1,
+            background: 'linear-gradient(250deg, rgba(130, 201, 30, 0) 0%, rgba(6, 35, 67, .7) 70%)',
+        }
+    },
+    heroBg: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        overflow: 'hidden',
+
+        '& video': {
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+        },
     },
 
     inner: {
@@ -27,8 +46,10 @@ export const useHeroStyles = createStyles((theme) => ({
     },
 
     content: {
-        paddingTop: theme.spacing.xl * 2,
-        paddingBottom: theme.spacing.xl * 2,
+        position: 'relative',
+        zIndex: 2,
+        paddingTop: theme.spacing.xl * 4,
+        paddingBottom: theme.spacing.xl * 4,
         marginRight: theme.spacing.xl * 3,
 
         [theme.fn.smallerThan('md')]: {

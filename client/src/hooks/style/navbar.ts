@@ -2,6 +2,13 @@ import {createStyles} from "@mantine/core";
 
 export const useNavbarStyles = createStyles((theme) => ({
 
+    logo: {
+        '& img': {
+            width: '80px',
+            height: 'auto'
+        }
+    },
+
     link: {
         display: 'flex',
         textDecoration: 'none',
@@ -10,7 +17,10 @@ export const useNavbarStyles = createStyles((theme) => ({
             color: 'inherit'
         },
     },
+
     header: {
+        position: 'relative',
+        zIndex: 4,
         paddingTop: theme.spacing.sm,
         backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
         borderBottom: `1px solid ${
@@ -66,7 +76,7 @@ export const useNavbarStyles = createStyles((theme) => ({
 
     dropdown: {
         position: 'absolute',
-        top: 60,
+        top: 80,
         left: 0,
         right: 0,
         zIndex: 0,
@@ -104,9 +114,10 @@ export const useNavbarStyles = createStyles((theme) => ({
         fontWeight: 500,
         height: 38,
         backgroundColor: 'transparent',
+        border: 'none',
 
         '&:hover': {
-            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
+            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.blue[0],
         },
 
         '&[data-active]': {

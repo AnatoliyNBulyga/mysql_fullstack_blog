@@ -1,12 +1,9 @@
 import {
     Image,
-    Container,
     Title,
     Button,
     Group,
     Text,
-    List,
-    ThemeIcon,
 } from '@mantine/core';
 import {usePageSectionsStyles} from "../hooks/style/page-section";
 import {IPost} from "../models/posts/IPost";
@@ -25,7 +22,7 @@ export function PageSection({ post, index }: pageSectionProps) {
 
     return (
         <div className={`${classes.inner} ${classes.post}`}>
-            <div className={classes.content}>
+            <div className={`${classes.content} content`}>
                 <Title className={classes.title}>
                     {post.title}
                 </Title>
@@ -35,13 +32,13 @@ export function PageSection({ post, index }: pageSectionProps) {
 
                 <Group mt={30}>
                     <Link className="link" to={`/posts/${post.id}`}>
-                        <Button variant="outline" size="md" className={classes.control}>
+                        <Button variant="outline" size="md" className={classes.control} c="black">
                             Read more
                         </Button>
                     </Link>
                 </Group>
             </div>
-            <div className="img">
+            <div className={classes.image}>
                 {
                     post.img && <Image src={`${process.env.REACT_APP_BACKEND_URL}/${post.img}`} className={classes.image} alt="Post preview" />
                 }

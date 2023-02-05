@@ -1,7 +1,7 @@
 import {baseApi} from "./BaseService";
 
 
-export const fileAPI = baseApi.injectEndpoints({
+export const fileAPI = baseApi.enhanceEndpoints({ addTagTypes: ['File'] }).injectEndpoints({
     endpoints: (build) => ({
         addFile: build.mutation<string, any>({
             query: (formData: any) => ({
@@ -9,6 +9,7 @@ export const fileAPI = baseApi.injectEndpoints({
                 method: 'POST',
                 body: formData
             }),
+            invalidatesTags: ['File']
         })
     })
 });

@@ -10,53 +10,62 @@ export const useSingleStyles = createStyles((theme) => ({
         '& h1': {
             fontSize: '42px',
             color: '#333',
+
+            [theme.fn.smallerThan('md')]: {
+                fontSize: '36px',
+                lineHeight: '42px',
+            },
         },
         '& p': {
             textAlign: 'justify',
             lineHeight: '30px',
         },
-            '& .menu': {
-                flex: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '25px',
+    '& .menu': {
+        flex: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '25px',
 
-                '& h1': {
-                    fontSize: '20px',
+        [theme.fn.smallerThan('md')]: {
+            display: 'none'
+        },
+
+        '& h1': {
+            fontSize: '20px',
+            color: '#555',
+        },
+
+        '& .post': {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+
+                '& img': {
+                    width: '100%',
+                    height: '200px',
+                    objectFit: 'cover',
+                },
+
+                '& h2': {
                     color: '#555',
                 },
 
-                '& .post': {
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
+                '& .button': {
+                    width: 'max-content',
+                    padding: '7.5px 15px',
+                    cursor: 'pointer',
+                    color: 'teal',
+                    backgroundColor: 'white',
+                    border: '1px solid teal',
 
-                        '& img': {
-                            width: '100%',
-                            height: '200px',
-                            objectFit: 'cover',
-                        },
-
-                        '& h2': {
-                            color: '#555',
-                        },
-
-                        '& .button': {
-                            width: 'max-content',
-                            padding: '7.5px 15px',
-                            cursor: 'pointer',
-                            color: 'teal',
-                            backgroundColor: 'white',
-                            border: '1px solid teal',
-
-                        '&:hover': {
-                                border: '1px solid white',
-                                backgroundColor: '#b9e7e7',
-                                color: 'black',
-                            }
-                        }
+                '&:hover': {
+                        border: '1px solid white',
+                        backgroundColor: '#b9e7e7',
+                        color: 'black',
                     }
                 }
+            }
+        }
     },
     content: {
         flex: '5',
